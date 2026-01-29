@@ -56,6 +56,19 @@ class User extends Authenticatable
         return $this->hasOne(TranslatorPortfolio::class);
     }
 
+// In your User model or registration logic
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (!$user->role) {
+                $user->role = 'user';
+            }
+        });
+    }
+
+
     public function ratings()
     {
         return $this->hasMany(Rating::class);

@@ -16,22 +16,39 @@ class UsersTable
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
+
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable(),
-                TextColumn::make('email_verified_at')
-                    ->dateTime()
+
+                TextColumn::make('role')
+                    ->badge()
+                    ->colors([
+                        'primary' => 'user',
+                        'warning' => 'translator',
+                        'danger'  => 'admin',
+                    ])
                     ->sortable(),
+
+                TextColumn::make('status')
+                    ->badge()
+                    ->colors([
+                        'success' => 'active',
+                        'danger'  => 'blocked',
+                    ])
+                    ->sortable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
+        ->filters([
                 //
             ])
             ->recordActions([
