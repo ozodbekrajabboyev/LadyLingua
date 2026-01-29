@@ -10,6 +10,7 @@ use App\Filament\Resources\Orders\Schemas\OrderForm;
 use App\Filament\Resources\Orders\Schemas\OrderInfolist;
 use App\Filament\Resources\Orders\Tables\OrdersTable;
 use App\Models\Order;
+use Illuminate\Database\Eloquent\Builder;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -18,6 +19,25 @@ use Filament\Tables\Table;
 
 class OrderResource extends Resource
 {
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()->role === 'translator') {
+
+            $translatorId = auth()->user()->translatorPortfolio?->id;
+
+            if ($translatorId) {
+                $query->where('translator_id', $translatorId);
+            } else {
+                // If user is translator but has no portfolio, show no orders
+                $query->whereRaw('1 = 0');
+            }
+        }
+
+        return $query;
+    }
+
     protected static ?string $model = Order::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
