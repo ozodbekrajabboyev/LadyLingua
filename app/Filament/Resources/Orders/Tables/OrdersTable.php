@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -15,31 +16,27 @@ class OrdersTable
     {
         return $table
             ->columns([
-                TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('translator_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('work_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('language_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('status')
+                TextColumn::make('work.title')
+                    ->label('Work Title')
                     ->searchable(),
-                TextColumn::make('deadline')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('user.name')
+                    ->label('Client')
+                    ->searchable(),
+                TextColumn::make('language.lang_name')
+                    ->label('Target Language'),
+                SelectColumn::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'accepted' => 'Accepted',
+                        'rejected' => 'Rejected',
+                        'in_progress' => 'In Progress',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                    ])
+
+                    ->disabled(fn (): bool => auth()->user()->role !== 'translator')
+                    ->selectablePlaceholder(false)
+
             ])
             ->filters([
                 //
