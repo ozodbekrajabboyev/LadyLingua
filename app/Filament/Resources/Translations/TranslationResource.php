@@ -18,9 +18,13 @@ class TranslationResource extends Resource
 {
     protected static ?string $model = Translation::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::BookOpen;
+    protected static ?string $navigationLabel = "Tarjimalar";
 
-    protected static ?string $recordTitleAttribute = 'Translation';
+    public static function getModelLabel(): string
+    {
+        return "Tarjimalar";
+    }
 
     public static function form(Schema $schema): Schema
     {
