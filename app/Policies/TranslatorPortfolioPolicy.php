@@ -6,14 +6,15 @@ use App\Models\TranslatorPortfolio;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class TranslatorsPolicy
+class TranslatorPortfolioPolicy
 {
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return auth()->user()->role === 'translator';
+        return auth()->user()->role === 'admin';
+//        return false;
     }
 
     /**
@@ -21,7 +22,9 @@ class TranslatorsPolicy
      */
     public function view(User $user, TranslatorPortfolio $translatorPortfolio): bool
     {
-        return auth()->user()->role === 'translator';
+//        return auth()->user()->role === 'admin';
+
+        return false;
     }
 
     /**

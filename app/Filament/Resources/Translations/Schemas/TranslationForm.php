@@ -104,6 +104,7 @@ class TranslationForm
 
                                 return $upload->id;
                             })
+
                             // CRITICAL: Load existing file on edit
                             ->afterStateHydrated(function ($state, $set, $record) {
                                 // This runs when form loads for editing
