@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use App\Observers\UserObserver;
 use Filament\Auth\Http\Responses\LoginResponse;
 //use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Auth\Http\Responses\RegistrationResponse;
@@ -54,6 +56,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        User::observe(UserObserver::class);
     }
 }

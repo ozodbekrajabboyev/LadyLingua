@@ -8,6 +8,7 @@ use App\Filament\Resources\Translators\Pages\ListTranslators;
 use App\Filament\Resources\Translators\Schemas\TranslatorsForm;
 use App\Filament\Resources\Translators\Tables\TranslatorsTable;
 use App\Models\TranslatorPortfolio;
+use App\Models\Translators;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
