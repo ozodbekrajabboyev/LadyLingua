@@ -27,6 +27,10 @@ class TranslatorsResource extends Resource
     {
         return TranslatorsForm::configure($schema);
     }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin';
+    }
 
     public static function table(Table $table): Table
     {

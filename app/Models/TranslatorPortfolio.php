@@ -46,4 +46,8 @@ class TranslatorPortfolio extends Model
     {
         return $this->hasMany(Order::class, 'translator_id');
     }
+    public function completedProjects()
+    {
+        return $this->orders()->where('status', 'completed');
+    }
 }
