@@ -2,15 +2,14 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Resources\Translators\Schemas\TranslatorsForm;
 use App\Models\TranslatorPortfolio;
 use BackedEnum;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 
 class MyProfile extends Page implements HasForms
@@ -28,55 +27,68 @@ class MyProfile extends Page implements HasForms
         return auth()->check() && auth()->user()->role === 'translator';
     }
 
-
     public function mount(): void
     {
-        $portfolio = TranslatorPortfolio::firstOrCreate(
+        $portfolio = TranslatorPortfolio::with('languages')->firstOrCreate(
             ['user_id' => Auth::id()],
             ['total_earnings' => 0, 'average_rating' => 0]
         );
 
-        $this->form->fill($portfolio->toArray());
+        $formData = $portfolio->toArray();
+        $formData['user_id'] = $portfolio->user_id;
+
+        // Prepare language proficiency for repeater
+        $formData['languageProficiency'] = $portfolio->languages->map(function ($language) {
+            return [
+                'available_language_id' => $language->id,
+                'proficiency_level' => $language->pivot->proficiency_level ?? 'intermediate',
+            ];
+        })->toArray();
+
+        $this->form->fill($formData);
     }
 
-    /**
-     * Get the form schema.
-     */
     protected function getFormSchema(): array
     {
-        return [
-            Textarea::make('bio')
-                ->label('Your Biography')
-                ->placeholder('Tell us about your translation experience...')
-                ->maxLength(1000)
-                ->rows(6)
-                ->required()
-                ->columnSpanFull(),
-
-            FileUpload::make('profile_image_url')
-                ->label('Profile Photo')
-                ->image()
-                ->disk('public')
-                ->directory('profiles')
-                ->visibility('public')
-                ->imageEditor()
-                ->maxSize(2048) // 2MB limit
-                ->columnSpanFull(),
-        ];
+        return TranslatorsForm::configure(new Schema())->getComponents();
     }
-
 
     protected function getFormStatePath(): string
     {
         return 'data';
     }
 
+    protected function getFormModel(): string
+    {
+        return TranslatorPortfolio::class;
+    }
 
     public function save(): void
     {
         $state = $this->form->getState();
 
-        TranslatorPortfolio::where('user_id', Auth::id())->update($state);
+        $portfolio = TranslatorPortfolio::where('user_id', Auth::id())->first();
+
+        // Extract language proficiency data
+        $languageProficiency = $state['languageProficiency'] ?? [];
+        unset($state['languageProficiency']);
+        unset($state['languages']); // Remove if exists
+
+        // Update portfolio
+        $portfolio->update($state);
+
+        // Sync languages with proficiency
+        if (!empty($languageProficiency)) {
+            $syncData = [];
+            foreach ($languageProficiency as $langData) {
+                if (isset($langData['available_language_id'])) {
+                    $syncData[$langData['available_language_id']] = [
+                        'proficiency_level' => $langData['proficiency_level'] ?? 'intermediate'
+                    ];
+                }
+            }
+            $portfolio->languages()->sync($syncData);
+        }
 
         Notification::make()
             ->title('Profile updated successfully!')

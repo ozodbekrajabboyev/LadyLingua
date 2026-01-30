@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Database\Query\Builder;
 use UnitEnum;
 
 class TranslatorsResource extends Resource
@@ -37,6 +38,14 @@ class TranslatorsResource extends Resource
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()->role === 'admin';
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('user', function (Builder $query) {
+                $query->where('role', 'translator');
+            });
     }
 
     public static function table(Table $table): Table
