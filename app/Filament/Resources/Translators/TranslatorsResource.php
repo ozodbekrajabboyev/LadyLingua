@@ -33,6 +33,10 @@ class TranslatorsResource extends Resource
     {
         return TranslatorsForm::configure($schema);
     }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin';
+    }
 
     public static function table(Table $table): Table
     {
@@ -53,5 +57,10 @@ class TranslatorsResource extends Resource
             'create' => CreateTranslators::route('/create'),
             'edit' => EditTranslators::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        return false; // Prevent manual creation, portfolios are created automatically
     }
 }
