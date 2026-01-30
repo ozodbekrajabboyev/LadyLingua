@@ -48,4 +48,9 @@ class TranslatorsResource extends Resource
             'edit' => EditTranslators::route('/{record}/edit'),
         ];
     }
+
+    public static function canCreate(): bool
+    {
+        return false; // Prevent manual creation, portfolios are created automatically
+    }
 }
