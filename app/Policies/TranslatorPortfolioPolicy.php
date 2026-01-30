@@ -32,7 +32,7 @@ class TranslatorPortfolioPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -40,7 +40,8 @@ class TranslatorPortfolioPolicy
      */
     public function update(User $user, TranslatorPortfolio $translatorPortfolio): bool
     {
-        return true;
+        return auth()->user()->role !== 'admin';
+
     }
 
     /**

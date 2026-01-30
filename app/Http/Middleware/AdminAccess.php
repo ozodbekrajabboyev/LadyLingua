@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,8 +16,13 @@ class AdminAccess
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->check() && auth()->user()->role === 'user') {
-            return redirect('/')->with('error', 'Access denied to admin panel.');
+        if (auth()->check()) {
+            /** @var User $user */
+            $user = auth()->user();
+
+            if ($user->role === 'user') {
+                return redirect('/')->with('error', 'Access denied to admin panel.');
+            }
         }
 
         return $next($request);

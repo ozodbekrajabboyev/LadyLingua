@@ -27,6 +27,16 @@ class AvailableLanguage extends Model
     {
         return $this->hasMany(Translation::class, 'language_id');
     }
+    public function translators()
+    {
+        return $this->belongsToMany(
+            TranslatorPortfolio::class,
+            'translator_language',
+            'available_language_id',
+            'translator_portfolio_id'
+        )->withPivot('proficiency_level')->withTimestamps();
+    }
+
 
     public function orders()
     {

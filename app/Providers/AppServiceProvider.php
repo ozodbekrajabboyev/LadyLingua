@@ -22,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
             return new class extends RegistrationResponse {
                 public function toResponse($request): \Illuminate\Http\RedirectResponse|\Livewire\Features\SupportRedirects\Redirector
                 {
+                    /** @var \App\Models\User|null $user */
                     $user = auth()->user();
 
                     if ($user && $user->role === 'user') {
@@ -38,9 +39,10 @@ class AppServiceProvider extends ServiceProvider
             return new class extends LoginResponse {
                 public function toResponse($request): \Illuminate\Http\RedirectResponse|\Livewire\Features\SupportRedirects\Redirector
                 {
+                    /** @var \App\Models\User|null $user */
                     $user = auth()->user();
 
-                    if ($user && $user->role === 'user') {
+                    if ($user && ($user->role === 'user' || $user->status === 'blocked')) {
                         return redirect('/');
                     }
 

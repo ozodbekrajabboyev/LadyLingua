@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Translators\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 //use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -19,22 +20,23 @@ class TranslatorsForm
                 Section::make('Translator Information')
                     ->description('Manage translator profile and details')
                     ->schema([
-                        Select::make('user_id')
-                            ->label('User')
-                            ->relationship('user', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                            ->createOptionForm([
-                                TextInput::make('name')
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('email')
-                                    ->email()
-                                    ->required()
-                                    ->maxLength(255),
-                            ])
-                            ->columnSpanFull(),
+//                        Select::make('user_id')
+//                            ->label('User')
+//                            ->relationship('user', 'name')
+//                            ->searchable()
+//                            ->preload()
+//                            ->hidden()
+//                            ->required()
+//                            ->createOptionForm([
+//                                TextInput::make('name')
+//                                    ->required()
+//                                    ->maxLength(255),
+//                                TextInput::make('email')
+//                                    ->email()
+//                                    ->required()
+//                                    ->maxLength(255),
+//                            ])
+//                            ->columnSpanFull(),
 
                         FileUpload::make('profile_image_url')
                             ->label('Profile Photo')
@@ -57,30 +59,56 @@ class TranslatorsForm
                     ])
                     ->columns(2),
 
-                Section::make('Performance Metrics')
-                    ->description('Track earnings and ratings')
+                Section::make('Languages & Proficiency')
+                    ->description('Select languages you know and specify your proficiency level for each')
                     ->schema([
-                        TextInput::make('total_earnings')
-                            ->label('Total Earnings')
-                            ->numeric()
-                            ->prefix('$')
-                            ->default(0)
-                            ->minValue(0)
-                            ->step(0.01)
-                            ->required(),
+                        Repeater::make('languageProficiency')
+                            ->label('Your Languages')
+                            ->schema([
+                                Select::make('available_language_id')
+                                    ->label('Language')
+                                    ->options(function () {
+                                        return \App\Models\AvailableLanguage::pluck('lang_name', 'id');
+                                    })
+                                    ->searchable()
+                                    ->required()
+                                    ->distinct()
+                                    ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                                    ->live()
+                                    ->placeholder('Select a language'),
 
-                        TextInput::make('average_rating')
-                            ->label('Average Rating')
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(5)
-                            ->step(0.1)
-                            ->default(0)
-                            ->suffix('⭐')
-                            ->required()
-                            ->helperText('Rating from 0 to 5'),
-                    ])
-                    ->columns(2),
+                                Select::make('proficiency_level')
+                                    ->label('Proficiency Level')
+                                    ->options([
+                                        'beginner' => '🌱 Beginner',
+                                        'intermediate' => '📚 Intermediate',
+                                        'advanced' => '🎓 Advanced',
+                                        'native' => '🏆 Native Speaker',
+                                    ])
+                                    ->required()
+                                    ->default('intermediate')
+                                    ->placeholder('Select proficiency'),
+                            ])
+                            ->columns(2)
+                            ->defaultItems(1)
+                            ->minItems(1)
+                            ->maxItems(20)
+                            ->addActionLabel('+ Add Another Language')
+                            ->reorderable()
+                            ->collapsible()
+                            ->collapsed(false)
+                            ->itemLabel(fn (array $state): ?string =>
+                            isset($state['available_language_id'])
+                                ? \App\Models\AvailableLanguage::find($state['available_language_id'])?->lang_name
+                                . ' - ' . ucfirst($state['proficiency_level'] ?? 'Not set')
+                                : 'New Language'
+                            )
+                            ->columnSpanFull()
+                            ->deleteAction(
+                                fn ($action) => $action->requiresConfirmation()
+                            ),
+                    ]),
+
             ]);
     }
 }

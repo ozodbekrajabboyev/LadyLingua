@@ -22,8 +22,9 @@ class TranslatorsTable
                 ImageColumn::make('profile_image_url')
                     ->label('Photo')
                     ->circular()
-                    ->defaultImageUrl(url('/images/default-avatar.png'))
-                    ->size(50),
+                    ->disk('public')
+                    ->size(50)
+                    ->defaultImageUrl('https://ui-avatars.com/api/?name=User&color=7F9CF5&background=EBF4FF'),
 
                 TextColumn::make('user.name')
                     ->label('Name')
@@ -38,14 +39,28 @@ class TranslatorsTable
                     ->copyable()
                     ->icon('heroicon-m-envelope'),
 
-                TextColumn::make('bio')
-                    ->label('Biography')
-                    ->limit(50)
-                    ->wrap()
-                    ->tooltip(function ($record): ?string {
-                        return $record->bio;
+                TextColumn::make('languages.lang_name')
+                    ->label('Languages')
+                    ->badge()
+                    ->separator(',')
+                    ->limit(3)
+                    ->tooltip(function ($record): string {
+                        $languages = $record->languages->map(function ($lang) {
+                            $proficiency = $lang->pivot->proficiency_level ?? 'N/A';
+                            return $lang->lang_name . ' (' . ucfirst($proficiency) . ')';
+                        })->join(', ');
+                        return $languages ?: 'No languages';
                     })
-                    ->toggleable(),
+                    ->searchable(),
+
+//                TextColumn::make('bio')
+//                    ->label('Biography')
+//                    ->limit(50)
+//                    ->wrap()
+//                    ->tooltip(function ($record): ?string {
+//                        return $record->bio;
+//                    })
+//                    ->toggleable(),
 
                 TextColumn::make('total_earnings')
                     ->label('Earnings')
@@ -79,18 +94,6 @@ class TranslatorsTable
                     ->badge()
                     ->color('info'),
 
-                TextColumn::make('user.status')
-                    ->label('Status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'active' => 'success',
-                        'inactive' => 'warning',
-                        'suspended' => 'danger',
-                        default => 'gray',
-                    })
-                    ->sortable()
-                    ->toggleable(),
-
                 TextColumn::make('created_at')
                     ->label('Joined')
                     ->date('M d, Y')
@@ -104,6 +107,31 @@ class TranslatorsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                SelectFilter::make('languages')
+                    ->label('Language')
+                    ->relationship('languages', 'lang_name')
+                    ->searchable()
+                    ->preload()
+                    ->multiple(),
+
+                SelectFilter::make('proficiency')
+                    ->label('Proficiency Level')
+                    ->options([
+                        'beginner' => 'Beginner',
+                        'intermediate' => 'Intermediate',
+                        'advanced' => 'Advanced',
+                        'native' => 'Native Speaker',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['value'],
+                            fn (Builder $query, $value): Builder =>
+                            $query->whereHas('languages', function ($q) use ($value) {
+                                $q->where('proficiency_level', $value);
+                            })
+                        );
+                    }),
+
                 SelectFilter::make('rating')
                     ->label('Rating')
                     ->options([
@@ -157,6 +185,16 @@ class TranslatorsTable
             ->actions([
 //                ViewAction::make(),
 //                EditAction::make(),
-            ]);
+            ])
+            ->bulkActions([
+//                BulkActionGroup::make([
+//                    DeleteBulkAction::make(),
+//                ]),
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->striped()
+            ->emptyStateHeading('No translators found')
+            ->emptyStateDescription('Get started by creating your first translator profile.')
+            ->emptyStateIcon('heroicon-o-user-group');
     }
 }
