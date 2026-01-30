@@ -14,12 +14,19 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class TranslatorsResource extends Resource
 {
     protected static ?string $model = TranslatorPortfolio::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::UserGroup;
+    protected static ?string $navigationLabel = "Tarjimonlar";
+    protected static string | UnitEnum | null $navigationGroup = "Foydalanuvchilar boshqaruvi";
+    public static function getModelLabel(): string
+    {
+        return "Tarjimonlar";
+    }
 
     protected static ?string $recordTitleAttribute = 'TranslatorPortfolio';
 

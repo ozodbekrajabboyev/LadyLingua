@@ -10,12 +10,15 @@ use App\Filament\Resources\Orders\Schemas\OrderForm;
 use App\Filament\Resources\Orders\Schemas\OrderInfolist;
 use App\Filament\Resources\Orders\Tables\OrdersTable;
 use App\Models\Order;
+use Filament\Pages\Enums\SubNavigationPosition;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class OrderResource extends Resource
 {
@@ -40,9 +43,15 @@ class OrderResource extends Resource
 
     protected static ?string $model = Order::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::ShoppingCart;
+    protected static ?string $navigationLabel = "Buyurtmalar";
+    public static function getModelLabel(): string
+    {
+        return "Buyurtmalar";
+    }
 
-    protected static ?string $recordTitleAttribute = 'Order';
+    protected static string | UnitEnum | null $navigationGroup = "Buyurtmalar boshqaruvi";
+    protected static ?string $recordTitleAttribute = 'Buyurtmalar';
 
     public static function form(Schema $schema): Schema
     {
