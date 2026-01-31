@@ -85,26 +85,13 @@ class TranslatorsTable
                     })
                     ->formatStateUsing(fn ($state) => $state ? number_format($state, 1) . ' ⭐' : 'No rating')
                     ->alignCenter(),
-
-                TextColumn::make('completed_projects_count')
+                TextColumn::make('completed_translations_count')
                     ->label('Projects')
-                    ->counts('completedProjects')
+                    ->counts('completedTranslations')
                     ->sortable()
                     ->alignCenter()
                     ->badge()
                     ->color('info'),
-
-                TextColumn::make('created_at')
-                    ->label('Joined')
-                    ->date('M d, Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('updated_at')
-                    ->label('Last Updated')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('languages')

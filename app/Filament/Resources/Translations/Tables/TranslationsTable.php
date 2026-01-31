@@ -5,14 +5,14 @@ namespace App\Filament\Resources\Translations\Tables;
 use Carbon\Carbon;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+//use Filament\Tables\Actions\EditAction;
+//use Filament\Tables\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use App\Models\AvailableLanguage;
-use App\Models\Work;
 use Illuminate\Database\Eloquent\Builder;
 
 class TranslationsTable
@@ -20,6 +20,24 @@ class TranslationsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                $user = auth()->user();
+
+                // If translator, show only their own translations
+                if ($user->isTranslator()) {
+                    $translatorPortfolio = $user->translatorPortfolio;
+                    if ($translatorPortfolio) {
+                        $query->where('translator_id', $translatorPortfolio->id);
+                    } else {
+                        // If translator has no portfolio, show nothing
+                        $query->whereRaw('1 = 0');
+                    }
+                }
+
+                // Admins see everything (no filter applied)
+
+                return $query;
+            })
             ->columns([
                 TextColumn::make('work.title')
                     ->label('Asar nomi')
@@ -34,6 +52,13 @@ class TranslationsTable
                         return null;
                     })
                     ->wrap(),
+
+                TextColumn::make('translator.user.name')
+                    ->label('Tarjimon')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
+                    ->visible(fn () => auth()->user()->isAdmin()), // Only admins see this
 
                 TextColumn::make('language.lang_name')
                     ->label('Tarjima tili')
@@ -128,6 +153,14 @@ class TranslationsTable
                     ->multiple()
                     ->preload(),
 
+                SelectFilter::make('translator_id')
+                    ->label('Tarjimon')
+                    ->relationship('translator.user', 'name')
+                    ->searchable()
+                    ->multiple()
+                    ->preload()
+                    ->visible(fn () => auth()->user()->isAdmin()), // Only admins see this filter
+
                 Filter::make('created_at')
                     ->form([
                         DatePicker::make('created_from')
@@ -160,10 +193,28 @@ class TranslationsTable
                     }),
             ])
             ->actions([
-                    ViewAction::make()
-                        ->label(''),
-                    EditAction::make()
-                        ->label('')
+                ViewAction::make()
+                    ->label(''),
+                EditAction::make()
+                    ->label('')
+                    ->visible(function ($record) {
+                        $user = auth()->user();
+
+                        // Admins can edit everything
+                        if ($user->isAdmin()) {
+                            return true;
+                        }
+
+                        // Translators can only edit their own drafts
+                        if ($user->isTranslator()) {
+                            $portfolio = $user->translatorPortfolio;
+                            return $portfolio &&
+                                $record->translator_id === $portfolio->id &&
+                                $record->status === 'draft';
+                        }
+
+                        return false;
+                    }),
             ])
             ->emptyStateHeading('Hech qanday tarjima topilmadi')
             ->emptyStateDescription('Yangi tarjima qo\'shish uchun yuqoridagi tugmani bosing.')

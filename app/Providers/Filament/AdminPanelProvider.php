@@ -2,6 +2,10 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\AdminStatsOverview;
+use App\Filament\Widgets\MyActiveOrders;
+use App\Filament\Widgets\RecentOrders;
+use App\Filament\Widgets\TranslatorStatsOverview;
 use App\Http\Middleware\AdminAccess;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -45,7 +49,13 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
-                FilamentInfoWidget::class,
+//                FilamentInfoWidget::class,
+                // Admin Widgets
+                AdminStatsOverview::class,
+                RecentOrders::class,
+                // Translator Widgets
+                TranslatorStatsOverview::class,
+                MyActiveOrders::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -57,7 +67,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                AdminAccess::class,
+//                AdminAccess::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
