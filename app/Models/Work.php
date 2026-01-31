@@ -13,6 +13,7 @@ class Work extends Model
         'title',
         'original_language_id',
         'author_name',
+        'description',
     ];
 
     /**

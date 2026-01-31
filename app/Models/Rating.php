@@ -14,10 +14,14 @@ class Rating extends Model
         'user_id',
         'stars',
         'comment',
+        'created_at',
     ];
 
     public $timestamps = false;
-    protected $dates = ['created_at'];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+    ];
 
     /**
      * Relationships

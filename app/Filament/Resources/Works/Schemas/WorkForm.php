@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Works\Schemas;
 //use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -21,6 +22,14 @@ class WorkForm
                             ->required()
                             ->maxLength(255)
                             ->placeholder('Enter work title')
+                            ->columnSpanFull(),
+
+                        Textarea::make('description')
+                            ->label('Work Description')
+                            ->maxLength(1000)
+                            ->rows(4)
+                            ->placeholder('Enter a brief description of the work (optional)')
+                            ->helperText('Brief description that will be displayed to users')
                             ->columnSpanFull(),
 
                         TextInput::make('author_name')
