@@ -60,4 +60,9 @@ class TranslatorPortfolio extends Model
     {
         return $this->orders()->where('status', 'completed');
     }
+    public function completedTranslations()
+    {
+        return $this->hasMany(Translation::class, 'translator_id')
+            ->where('status', 'published');
+    }
 }

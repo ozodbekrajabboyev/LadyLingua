@@ -34,14 +34,20 @@ class TranslationForm
                                     ->live()
                                     ->helperText('Tarjima qilmoqchi bo\'lgan asaringizni tanlang'),
 
+//                                use App\Models\AvailableLanguage;
+
                                 Select::make('language_id')
                                     ->label('Tarjima tili')
-                                    ->relationship('language', 'lang_name')
+                                    ->options(
+                                        AvailableLanguage::query()
+                                            ->pluck('lang_name', 'id')
+                                            ->toArray()
+                                    )
                                     ->searchable()
-                                    ->preload()
                                     ->required()
                                     ->placeholder('Maqsadli tilni tanlang')
                                     ->helperText('Asar qaysi tilga tarjima qilinadi'),
+
                             ])
                     ])
                     ->collapsible(),
@@ -90,20 +96,31 @@ class TranslationForm
                     ->description('Tarjima hujjati va ko\'rib chiqish sahifalari')
                     ->schema([
                         FileUpload::make('upload_id')
-                            ->label('Tarjima hujjati')
+                            ->label('Tarjima hujjati (PDF)')
                             ->disk('public')
                             ->directory('translations')
-                            ->visibility('private')
+                            ->visibility('public')
                             ->preserveFilenames()
                             ->openable()
                             ->downloadable()
-                            ->previewable(true)
-                            ->acceptedFileTypes(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
+                            ->previewable()
+
+                            // ✅ FAQAT PDF
+                            ->acceptedFileTypes(['application/pdf'])
+
+                            // (ixtiyoriy, lekin tavsiya etiladi)
+                            ->rules(['mimes:pdf'])
+
                             ->maxSize(10240) // 10MB
-                            ->helperText('PDF, DOC yoki DOCX formatida yuklang (maksimal 10MB)')
+                            ->helperText('Faqat PDF formatida yuklang (maksimal 10MB)')
+
+                            // 🔑 Edit paytida eski upload_id saqlanib qoladi
+                            ->dehydrated(fn ($state) => filled($state))
+
                             ->saveUploadedFileUsing(function ($file, $get) {
                                 $translatorId = $get('translator_id');
-                                if (!$translatorId && auth()->user()->role === 'translator') {
+
+                                if (!$translatorId && auth()->user()?->role === 'translator') {
                                     $translatorId = auth()->user()->translatorPortfolio?->id;
                                 }
 
@@ -112,9 +129,9 @@ class TranslationForm
                                     'file_path' => $file->store('translations', 'public'),
                                 ]);
 
-                                return $upload->id;
+                                return $upload->id; // FK — OK
                             })
-                            ->afterStateHydrated(function ($state, $set, $record) {
+        ->afterStateHydrated(function ($state, $set, $record) {
                                 if ($record && $record->upload_id) {
                                     $upload = \App\Models\Upload::find($record->upload_id);
                                     if ($upload && $upload->file_path) {
