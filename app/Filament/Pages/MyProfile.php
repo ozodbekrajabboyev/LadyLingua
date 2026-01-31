@@ -56,7 +56,7 @@ class MyProfile extends Page implements HasForms
 
     protected function getFormSchema(): array
     {
-        return TranslatorsForm::configure(new Schema)->getComponents();
+        return TranslatorsForm::configure(new Schema())->getComponents();
     }
 
     protected function getFormStatePath(): string
@@ -83,12 +83,13 @@ class MyProfile extends Page implements HasForms
         // Update portfolio
         $portfolio->update($state);
 
-        // Sync languages with proficiency
+
         if (! empty($languageProficiency)) {
             $syncData = [];
             foreach ($languageProficiency as $langData) {
                 if (isset($langData['available_language_id'])) {
                     $syncData[$langData['available_language_id']] = [
+                        'proficiency_level' => $langData['proficiency_level'] ?? 'intermediate'
                         'proficiency_level' => $langData['proficiency_level'] ?? 'intermediate',
                     ];
                 }

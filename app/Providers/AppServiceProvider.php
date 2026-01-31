@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Auth\CustomEloquentUserProvider;
 use App\Models\User;
 use App\Observers\UserObserver;
 use Filament\Auth\Http\Responses\LoginResponse;
 //use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Auth\Http\Responses\RegistrationResponse;
 use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -51,6 +53,9 @@ class AppServiceProvider extends ServiceProvider
             };
         });
 
+        Auth::provider('custom-eloquent', function ($app, $config) {
+            return new CustomEloquentUserProvider($this->app['hash'], $config['model']);
+        });
     }
 
     /**
