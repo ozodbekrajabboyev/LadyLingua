@@ -1,8 +1,15 @@
 <div class="group relative bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl p-5 transition-all hover:shadow-md hover:border-primary/30">
     <div class="flex flex-col sm:flex-row gap-5">
         <div class="flex-shrink-0">
-            <div class="size-24 rounded-xl bg-gray-100 overflow-hidden ring-1 ring-gray-200">
-                <img alt="{{ $name }}" class="h-full w-full object-cover" src="{{ $avatar }}">
+            <div class="size-24 rounded-xl bg-gray-100 overflow-hidden ring-1 ring-gray-200 relative">
+                <img alt="{{ $name }}"
+                     class="h-full w-full object-cover"
+                     src="{{ $avatar }}"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-lg font-bold"
+                     style="display:none;">
+                    {{ strtoupper(substr($name, 0, 2)) }}
+                </div>
             </div>
         </div>
         <div class="flex-1 min-w-0">
@@ -21,9 +28,9 @@
                     Profilni ko'rish
                 </button>
             </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">
-                {{ $description }}
-            </p>
+            <div class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">
+                {!! $description !!}
+            </div>
             <div class="flex flex-wrap items-center gap-2">
                 @foreach($languages as $lang)
                     <span class="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-900/30">{{ $lang }}</span>

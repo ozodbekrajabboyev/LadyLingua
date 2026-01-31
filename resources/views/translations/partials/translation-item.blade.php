@@ -15,8 +15,15 @@
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-gray-100 overflow-hidden ring-2 ring-white dark:ring-gray-800">
-                        <img alt="{{ $translator }}" class="w-full h-full object-cover" src="{{ $avatar }}">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 overflow-hidden ring-2 ring-white dark:ring-gray-800 relative">
+                        <img alt="{{ $translator }}"
+                             class="w-full h-full object-cover"
+                             src="{{ $avatar }}"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold"
+                             style="display:none;">
+                            {{ strtoupper(substr($translator, 0, 2)) }}
+                        </div>
                     </div>
                     <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ $translator }}</span>
                 </div>
