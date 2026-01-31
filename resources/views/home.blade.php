@@ -9,7 +9,7 @@
     <section class="w-full max-w-[1200px] px-6 lg:px-40 py-12">
         <div class="flex items-center justify-between mb-8">
             <h3 class="text-2xl font-bold text-[#121117] dark:text-white">So'nggi tarjimalar</h3>
-            <a class="text-primary text-sm font-semibold hover:underline" href="#">Barchasini ko'rish</a>
+            <a class="text-primary text-sm font-semibold hover:underline" href="/translations">Barchasini ko'rish</a>
         </div>
 
         @if(isset($latestTranslations) && $latestTranslations->count() > 0)

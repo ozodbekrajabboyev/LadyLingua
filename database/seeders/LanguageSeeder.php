@@ -23,6 +23,7 @@ class LanguageSeeder extends Seeder
             ['lang_name' => 'Chinese'],
             ['lang_name' => 'Japanese'],
             ['lang_name' => 'Korean'],
+            ['lang_name' => 'Uzbek'],
         ];
 
         foreach ($languages as $language) {
