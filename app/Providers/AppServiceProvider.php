@@ -44,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
                     /** @var \App\Models\User|null $user */
                     $user = auth()->user();
 
-                    if ($user && $user->role === 'user') {
+                    if ($user && ($user->role === 'user' || $user->status === 'blocked')) {
                         return redirect('/');
                     }
 

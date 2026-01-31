@@ -5,8 +5,9 @@ namespace App\Filament\Resources\Translators\Schemas;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 //use Filament\Forms\Components\Section;
+// use Filament\Forms\Components\Section;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -17,29 +18,29 @@ class TranslatorsForm
     {
         return $schema
             ->components([
-                Section::make('Translator Information')
-                    ->description('Manage translator profile and details')
+                Section::make('Tarjimon Ma\'lumotlari')
+                    ->description('Tarjimon profili va ma\'lumotlarini boshqarish')
                     ->schema([
-//                        Select::make('user_id')
-//                            ->label('User')
-//                            ->relationship('user', 'name')
-//                            ->searchable()
-//                            ->preload()
-//                            ->hidden()
-//                            ->required()
-//                            ->createOptionForm([
-//                                TextInput::make('name')
-//                                    ->required()
-//                                    ->maxLength(255),
-//                                TextInput::make('email')
-//                                    ->email()
-//                                    ->required()
-//                                    ->maxLength(255),
-//                            ])
-//                            ->columnSpanFull(),
+                        //                        Select::make('user_id')
+                        //                            ->label('User')
+                        //                            ->relationship('user', 'name')
+                        //                            ->searchable()
+                        //                            ->preload()
+                        //                            ->hidden()
+                        //                            ->required()
+                        //                            ->createOptionForm([
+                        //                                TextInput::make('name')
+                        //                                    ->required()
+                        //                                    ->maxLength(255),
+                        //                                TextInput::make('email')
+                        //                                    ->email()
+                        //                                    ->required()
+                        //                                    ->maxLength(255),
+                        //                            ])
+                        //                            ->columnSpanFull(),
 
                         FileUpload::make('profile_image_url')
-                            ->label('Profile Photo')
+                            ->label('Profil Rasmi')
                             ->image()
                             ->disk('public')
                             ->directory('profiles')
@@ -47,26 +48,25 @@ class TranslatorsForm
                             ->imageEditor()
                             ->maxSize(2048)
                             ->columnSpanFull()
-                            ->helperText('Upload a professional photo (max 2MB)'),
+                            ->helperText('Professional rasm yuklang (maks. 2MB)'),
 
-                        Textarea::make('bio')
-                            ->label('Biography')
-                            ->placeholder('Tell us about your translation experience, specializations, and expertise...')
+                        RichEditor::make('bio')
+                            ->label('Biografiya')
+                            ->placeholder('Tarjima tajribangiz, ixtisosligingiz va mahoratingiz haqida bizga aytib bering...')
                             ->maxLength(1000)
-                            ->rows(6)
                             ->columnSpanFull()
-                            ->helperText('Maximum 1000 characters'),
+                            ->helperText('Maksimal 1000 ta belgi'),
                     ])
                     ->columns(2),
 
-                Section::make('Languages & Proficiency')
-                    ->description('Select languages you know and specify your proficiency level for each')
+                Section::make('Tillar va Bilim Darajasi')
+                    ->description('O\'zingiz biladigan tillarni tanlang va har bir til uchun bilim darajangizni belgilang')
                     ->schema([
                         Repeater::make('languageProficiency')
-                            ->label('Your Languages')
+                            ->label('Sizning Tillaringiz')
                             ->schema([
                                 Select::make('available_language_id')
-                                    ->label('Language')
+                                    ->label('Til')
                                     ->options(function () {
                                         return \App\Models\AvailableLanguage::pluck('lang_name', 'id');
                                     })
@@ -75,33 +75,32 @@ class TranslatorsForm
                                     ->distinct()
                                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                     ->live()
-                                    ->placeholder('Select a language'),
+                                    ->placeholder('Tilni tanlang'),
 
                                 Select::make('proficiency_level')
-                                    ->label('Proficiency Level')
+                                    ->label('Bilim Darajasi')
                                     ->options([
-                                        'beginner' => '🌱 Beginner',
-                                        'intermediate' => '📚 Intermediate',
-                                        'advanced' => '🎓 Advanced',
-                                        'native' => '🏆 Native Speaker',
+                                        'beginner' => '🌱 Boshlang\'ich',
+                                        'intermediate' => '📚 O\'rta',
+                                        'advanced' => '🎓 Yuqori',
+                                        'native' => '🏆 Ona tili',
                                     ])
                                     ->required()
                                     ->default('intermediate')
-                                    ->placeholder('Select proficiency'),
+                                    ->placeholder('Darajani tanlang'),
                             ])
                             ->columns(2)
                             ->defaultItems(1)
                             ->minItems(1)
                             ->maxItems(20)
-                            ->addActionLabel('+ Add Another Language')
+                            ->addActionLabel('Til qo\'shish')
                             ->reorderable()
                             ->collapsible()
                             ->collapsed(false)
-                            ->itemLabel(fn (array $state): ?string =>
-                            isset($state['available_language_id'])
+                            ->itemLabel(fn (array $state): ?string => isset($state['available_language_id'])
                                 ? \App\Models\AvailableLanguage::find($state['available_language_id'])?->lang_name
-                                . ' - ' . ucfirst($state['proficiency_level'] ?? 'Not set')
-                                : 'New Language'
+                                .' - '.ucfirst($state['proficiency_level'] ?? 'Belgilanmagan')
+                                : 'Yangi Til'
                             )
                             ->columnSpanFull()
                             ->deleteAction(

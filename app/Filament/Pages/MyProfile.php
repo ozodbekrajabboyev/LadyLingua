@@ -5,18 +5,24 @@ namespace App\Filament\Pages;
 use App\Filament\Resources\Translators\Schemas\TranslatorsForm;
 use App\Models\TranslatorPortfolio;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
 
 class MyProfile extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::UserCircle;
+
+    protected static ?string $navigationLabel = 'Mening Profilim';
+
+    protected static ?string $title = 'Mening Profilim';
 
     protected string $view = 'filament.pages.my-profile';
 
@@ -77,13 +83,14 @@ class MyProfile extends Page implements HasForms
         // Update portfolio
         $portfolio->update($state);
 
-        // Sync languages with proficiency
-        if (!empty($languageProficiency)) {
+
+        if (! empty($languageProficiency)) {
             $syncData = [];
             foreach ($languageProficiency as $langData) {
                 if (isset($langData['available_language_id'])) {
                     $syncData[$langData['available_language_id']] = [
                         'proficiency_level' => $langData['proficiency_level'] ?? 'intermediate'
+                        'proficiency_level' => $langData['proficiency_level'] ?? 'intermediate',
                     ];
                 }
             }
@@ -91,7 +98,7 @@ class MyProfile extends Page implements HasForms
         }
 
         Notification::make()
-            ->title('Profile updated successfully!')
+            ->title('Profil muvaffaqiyatli yangilandi!')
             ->success()
             ->send();
     }
