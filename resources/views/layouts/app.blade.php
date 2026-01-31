@@ -46,6 +46,12 @@
             font-variation-settings: 'FILL' 1;
             color: #fbbf24;
         }
+        .line-clamp-2 {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
     </style>
 
     @stack('head')
