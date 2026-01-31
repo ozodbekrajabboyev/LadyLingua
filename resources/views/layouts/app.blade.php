@@ -54,6 +54,7 @@
         }
     </style>
 
+    @livewireStyles
     @stack('head')
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-[#121117] dark:text-white transition-colors duration-200">
@@ -68,5 +69,6 @@
     </div>
 
     @stack('scripts')
+    @livewireScripts
 </body>
 </html>
