@@ -2,20 +2,18 @@
 
 namespace App\Filament\Resources\Translations\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Carbon\Carbon;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-//use Filament\Tables\Actions\BulkActionGroup;
-//use Filament\Tables\Actions\DeleteBulkAction;
-//use Filament\Tables\Actions\EditAction;
-//use Filament\Tables\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use App\Models\AvailableLanguage;
 use App\Models\Work;
+use Illuminate\Database\Eloquent\Builder;
 
 class TranslationsTable
 {
@@ -24,7 +22,7 @@ class TranslationsTable
         return $table
             ->columns([
                 TextColumn::make('work.title')
-                    ->label('Work Title')
+                    ->label('Asar nomi')
                     ->searchable()
                     ->sortable()
                     ->limit(50)
@@ -34,97 +32,148 @@ class TranslationsTable
                             return $state;
                         }
                         return null;
-                    }),
+                    })
+                    ->wrap(),
 
                 TextColumn::make('language.lang_name')
-                    ->label('Target Language')
+                    ->label('Tarjima tili')
                     ->searchable()
                     ->sortable()
                     ->badge()
                     ->color('info'),
-                BadgeColumn::make('status')
-                    ->label('Status')
-                    ->colors([
-                        'warning' => 'draft',
-                        'success' => 'published',
-                        'danger' => 'blocked',
-                    ])
-                    ->icons([
-                        'heroicon-o-pencil' => 'draft',
-                        'heroicon-o-check-circle' => 'published',
-                        'heroicon-o-x-circle' => 'blocked',
-                    ])
+
+                TextColumn::make('status')
+                    ->label('Holati')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'warning',
+                        'published' => 'success',
+                        'blocked' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'draft' => 'Qoralama',
+                        'published' => 'Nashr etilgan',
+                        'blocked' => 'Bloklangan',
+                        default => $state,
+                    })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'draft' => 'heroicon-o-pencil',
+                        'published' => 'heroicon-o-check-circle',
+                        'blocked' => 'heroicon-o-x-circle',
+                        default => 'heroicon-o-question-mark-circle',
+                    })
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('price')
-                    ->label('Price')
-                    ->money('USD')
+                    ->label('Narxi')
+                    ->money('UZS')
                     ->sortable()
-                    ->alignEnd(),
+                    ->alignEnd()
+                    ->toggleable(),
 
                 TextColumn::make('preview_pages_cnt')
-                    ->label('Preview Pages')
+                    ->label('Ko\'rib chiqish sahifalari')
                     ->numeric()
                     ->sortable()
                     ->alignCenter()
-                    ->suffix(' pages'),
+                    ->suffix(' sahifa')
+                    ->placeholder('—'),
 
                 TextColumn::make('upload.file_path')
-                    ->label('Document')
-                    ->formatStateUsing(fn ($state) => $state ? '📄 Uploaded' : 'No file')
+                    ->label('Hujjat')
+                    ->formatStateUsing(fn ($state) => $state ? '📄Yuklangan' : 'Fayl yo\'q')
                     ->badge()
+                    ->placeholder("Topilmadi")
                     ->color(fn ($state) => $state ? 'success' : 'gray')
                     ->toggleable(),
 
                 TextColumn::make('created_at')
-                    ->label('Created')
-                    ->dateTime('M j, Y')
+                    ->label('Yaratilgan')
+                    ->dateTime('d.m.Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
-                    ->label('Last Updated')
-                    ->dateTime('M j, Y g:i A')
+                    ->label('Yangilangan')
+                    ->dateTime('d.m.Y H:i')
                     ->sortable()
                     ->since()
+                    ->description(fn ($record) => $record->updated_at->format('d.m.Y H:i'))
                     ->toggleable(),
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->label('Status')
+                    ->label('Holati')
                     ->options([
-                        'draft' => 'Draft',
-                        'published' => 'Published',
-                        'blocked' => 'Blocked',
+                        'draft' => 'Qoralama',
+                        'published' => 'Nashr etilgan',
+                        'blocked' => 'Bloklangan',
                     ])
-                    ->multiple(),
+                    ->multiple()
+                    ->searchable(),
 
                 SelectFilter::make('language_id')
-                    ->label('Language')
-                    ->options(AvailableLanguage::all()->pluck('lang_name', 'id'))
+                    ->label('Til')
+                    ->relationship('language', 'lang_name')
                     ->searchable()
-                    ->multiple(),
+                    ->multiple()
+                    ->preload(),
 
                 SelectFilter::make('work_id')
-                    ->label('Work')
-                    ->options(Work::all()->pluck('title', 'id'))
+                    ->label('Asar')
+                    ->relationship('work', 'title')
                     ->searchable()
-                    ->multiple(),
+                    ->multiple()
+                    ->preload(),
+
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label('Boshlanishi'),
+                        DatePicker::make('created_until')
+                            ->label('Tugashi'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                        if ($data['created_from'] ?? null) {
+                            $indicators[] = Indicator::make('Boshlanishi: ' . Carbon::parse($data['created_from'])->format('d.m.Y'))
+                                ->removeField('created_from');
+                        }
+                        if ($data['created_until'] ?? null) {
+                            $indicators[] = Indicator::make('Tugashi: ' . Carbon::parse($data['created_until'])->format('d.m.Y'))
+                                ->removeField('created_until');
+                        }
+                        return $indicators;
+                    }),
             ])
             ->actions([
-                ViewAction::make()
-                    ->iconButton(),
-                EditAction::make()
-                    ->iconButton(),
+                    ViewAction::make()
+                        ->label(''),
+                    EditAction::make()
+                        ->label('')
             ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ])
+            ->emptyStateHeading('Hech qanday tarjima topilmadi')
+            ->emptyStateDescription('Yangi tarjima qo\'shish uchun yuqoridagi tugmani bosing.')
+            ->emptyStateIcon('heroicon-o-document-text')
             ->defaultSort('updated_at', 'desc')
             ->striped()
-            ->paginated([10, 25, 50, 100]);
+            ->paginated([10, 25, 50, 100])
+            ->deferLoading()
+            ->persistSortInSession()
+            ->persistSearchInSession()
+            ->persistFiltersInSession();
     }
 }

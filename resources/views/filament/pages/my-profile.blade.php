@@ -4,7 +4,7 @@
         <br>
         <div class="mt-6">
             <x-filament::button type="submit">
-                Save Changes
+                Saqlash
             </x-filament::button>
         </div>
     </form>

@@ -19,26 +19,35 @@ class TranslationForm
         return $schema
             ->components([
 
-                Section::make('Translation Details')
+                Section::make('Tarjima ma\'lumotlari')
+                    ->description('Asosiy tarjima ma\'lumotlarini kiriting')
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 Select::make('work_id')
-                                    ->label('Work')
-                                    ->options(Work::all()->pluck('title', 'id'))
+                                    ->label('Asar')
+                                    ->relationship('work', 'title')
                                     ->searchable()
+                                    ->preload()
                                     ->required()
-                                    ->placeholder('Select a work to translate'),
-                                Select::make('language_id')
-                                    ->label('Target Language')
-                                    ->options(AvailableLanguage::all()->pluck('lang_name', 'id'))
-                                    ->searchable()
-                                    ->required()
-                                    ->placeholder('Select target language'),
-                            ])
-                    ]),
+                                    ->placeholder('Tarjima qilinadigan asarni tanlang')
+                                    ->live()
+                                    ->helperText('Tarjima qilmoqchi bo\'lgan asaringizni tanlang'),
 
-                Section::make('Assignment & Pricing')
+                                Select::make('language_id')
+                                    ->label('Tarjima tili')
+                                    ->relationship('language', 'lang_name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required()
+                                    ->placeholder('Maqsadli tilni tanlang')
+                                    ->helperText('Asar qaysi tilga tarjima qilinadi'),
+                            ])
+                    ])
+                    ->collapsible(),
+
+                Section::make('Holat va narx')
+                    ->description('Tarjima holati va narxini belgilang')
                     ->schema([
                         Grid::make(3)
                             ->schema([
@@ -51,46 +60,47 @@ class TranslationForm
                                     }),
 
                                 Select::make('status')
-                                    ->label('Translation Status')
+                                    ->label('Holati')
                                     ->options([
-                                        'draft' => 'Draft',
-                                        'published' => 'Published',
-                                        'blocked' => 'Blocked'
+                                        'draft' => 'Qoralama',
+                                        'published' => 'Nashr etilgan',
+                                        'blocked' => 'Bloklangan'
                                     ])
                                     ->default('draft')
-                                    ->required(),
+                                    ->required()
+                                    ->native(false)
+                                    ->helperText('Tarjimaning joriy holati'),
 
                                 TextInput::make('price')
-                                    ->label('Translation Price')
+                                    ->label('Narxi')
                                     ->numeric()
-                                    ->prefix('$')
+                                    ->suffix('UZS')
                                     ->step(0.01)
                                     ->minValue(0)
-                                    ->maxValue(99999.99)
+                                    ->maxValue(10000000)
                                     ->required()
-                                    ->placeholder('0.00'),
+                                    ->placeholder('0.00')
+                                    ->helperText('Tarjima narxini kiriting (Sumda)')
+                                    ->live(onBlur: true),
                             ])
-                    ]),
+                    ])
+                    ->collapsible(),
 
-                Section::make('Additional Information')
+                Section::make('Qo\'shimcha ma\'lumotlar')
+                    ->description('Tarjima hujjati va ko\'rib chiqish sahifalari')
                     ->schema([
-                        // CRITICAL: For file uploads to persist properly on edit/view:
-                        // 1. The field name should match the relationship or column
-                        // 2. Use relationship() method if linking to related model
-                        // 3. Or store the file path directly in a column
-
                         FileUpload::make('upload_id')
-                            ->label('Translation Document')
+                            ->label('Tarjima hujjati')
                             ->disk('public')
                             ->directory('translations')
                             ->visibility('private')
                             ->preserveFilenames()
-                            // Enable file preview/download on edit
-                            ->openable()  // Allows opening file in new tab
-                            ->downloadable()  // Adds download button
-                            // For better UX, show file info without re-downloading
+                            ->openable()
+                            ->downloadable()
                             ->previewable(true)
-                            // Handle custom file saving logic
+                            ->acceptedFileTypes(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
+                            ->maxSize(10240) // 10MB
+                            ->helperText('PDF, DOC yoki DOCX formatida yuklang (maksimal 10MB)')
                             ->saveUploadedFileUsing(function ($file, $get) {
                                 $translatorId = $get('translator_id');
                                 if (!$translatorId && auth()->user()->role === 'translator') {
@@ -104,23 +114,16 @@ class TranslationForm
 
                                 return $upload->id;
                             })
-
-                            // CRITICAL: Load existing file on edit
                             ->afterStateHydrated(function ($state, $set, $record) {
-                                // This runs when form loads for editing
                                 if ($record && $record->upload_id) {
                                     $upload = \App\Models\Upload::find($record->upload_id);
                                     if ($upload && $upload->file_path) {
-                                        // Set the file path so FileUpload can display it
                                         $set('upload_id', $upload->file_path);
                                     }
                                 }
                             })
-                            // Handle file updates/replacements
                             ->afterStateUpdated(function ($state, $get, $set, $record) {
-                                // This runs when a new file is uploaded during edit
                                 if ($state && $record) {
-                                    // Optional: Delete old file before uploading new one
                                     if ($record->upload_id) {
                                         $oldUpload = \App\Models\Upload::find($record->upload_id);
                                         if ($oldUpload && $oldUpload->file_path) {
@@ -133,12 +136,17 @@ class TranslationForm
                             ->columnSpanFull(),
 
                         TextInput::make('preview_pages_cnt')
-                            ->label('Preview Pages Count')
+                            ->label('Ko\'rib chiqish sahifalari soni')
                             ->required()
                             ->numeric()
                             ->default(0)
-                            ->minValue(0),
-                    ]),
+                            ->minValue(0)
+                            ->maxValue(1000)
+                            ->suffix('sahifa')
+                            ->helperText('Bepul ko\'rib chiqish uchun ruxsat berilgan sahifalar soni')
+                            ->live(onBlur: true),
+                    ])
+                    ->collapsible(),
             ]);
     }
 
