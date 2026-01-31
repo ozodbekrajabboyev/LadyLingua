@@ -90,7 +90,6 @@ class MyProfile extends Page implements HasForms
                 if (isset($langData['available_language_id'])) {
                     $syncData[$langData['available_language_id']] = [
                         'proficiency_level' => $langData['proficiency_level'] ?? 'intermediate'
-                        'proficiency_level' => $langData['proficiency_level'] ?? 'intermediate',
                     ];
                 }
             }
