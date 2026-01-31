@@ -10,7 +10,8 @@
             <nav class="hidden md:flex items-center gap-8">
                 <a class="text-primary text-sm font-semibold border-b-2 border-primary pb-1" href="/">Explore</a>
                 <a class="text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="/translators">Tarjimonlar</a>
-                <a class="text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="/works">Tarjimalar</a>
+                <a class="text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="/translations">Tarjimalar</a>
+                <a class="text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="/orders">Buyurtmalarim</a>
             </nav>
         </div>
         <div class="flex items-center gap-3">
