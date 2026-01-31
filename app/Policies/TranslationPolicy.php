@@ -45,7 +45,7 @@ class TranslationPolicy
      */
     public function delete(User $user, Translation $translation): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -61,6 +61,6 @@ class TranslationPolicy
      */
     public function forceDelete(User $user, Translation $translation): bool
     {
-        return true;
+        return false;
     }
 }
