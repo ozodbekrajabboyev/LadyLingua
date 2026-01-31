@@ -29,6 +29,20 @@ class WorksTable
                     ->sortable()
                     ->icon('heroicon-m-user'),
 
+                TextColumn::make('description')
+                    ->label('Description')
+                    ->limit(50)
+                    ->tooltip(function (TextColumn $column): ?string {
+                        $state = $column->getState();
+                        if (strlen($state) > 50) {
+                            return $state;
+                        }
+                        return null;
+                    })
+                    ->placeholder('No description')
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('originalLanguage.lang_name')
                     ->label('Original Language')
                     ->badge()
