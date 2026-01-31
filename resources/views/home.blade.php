@@ -3,7 +3,8 @@
 @section('title', config('app.name', 'LadyLingo') . ' - Tarjimonlar va Kitobxonlar Platformasi')
 
 @section('content')
-    <x-hero-section />
+    {{-- Live Search Hero Section --}}
+    <livewire:search-translations />
 
     <section class="w-full max-w-[1200px] px-6 lg:px-40 py-12">
         <div class="flex items-center justify-between mb-8">
