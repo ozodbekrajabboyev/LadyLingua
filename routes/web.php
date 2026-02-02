@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\TranslatorController;
 use App\Http\Controllers\UserController;
@@ -10,8 +11,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/translations', [TranslationController::class, 'index'])->name('translations');
 Route::get('/translators', [TranslatorController::class, 'index'])->name('translators');
 
-Route::get('/orders', function () {
-    return view('orders.index');
+Route::middleware('auth')->group(function () {
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders');
 });
 
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');

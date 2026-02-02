@@ -8,32 +8,45 @@
             <h1 class="text-3xl font-black leading-tight tracking-tight text-[#121117] dark:text-white md:text-4xl">Buyurtmalarim</h1>
             <p class="text-base text-gray-500 dark:text-gray-400">Faol va yakunlangan loyihalar ro'yxati</p>
         </div>
-        <button class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-white transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50">
+        <a href="{{ route('translations') }}" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-white transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50">
             <span class="material-symbols-outlined text-[20px]">add</span>
             Yangi buyurtma
-        </button>
+        </a>
     </div>
 
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mt-8">
-        <div class="relative w-full lg:max-w-md">
+        <form method="GET" action="{{ route('orders') }}" class="relative w-full lg:max-w-md">
+            @if(request('status'))
+                <input type="hidden" name="status" value="{{ request('status') }}">
+            @endif
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
                 <span class="material-symbols-outlined">search</span>
             </div>
-            <input class="block w-full rounded-lg border-0 bg-white dark:bg-gray-900 py-3 pl-10 pr-4 text-sm text-[#121117] dark:text-white placeholder:text-gray-400 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Buyurtma raqami yoki loyiha nomini qidirish..." type="text">
-        </div>
+            <input
+                name="search"
+                value="{{ request('search') }}"
+                class="block w-full rounded-lg border-0 bg-white dark:bg-gray-900 py-3 pl-10 pr-4 text-sm text-[#121117] dark:text-white placeholder:text-gray-400 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 focus:ring-2 focus:ring-primary focus:outline-none"
+                placeholder="Buyurtma raqami yoki loyiha nomini qidirish..."
+                type="text"
+                onchange="this.form.submit()">
+        </form>
         <div class="flex gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
-            <button class="whitespace-nowrap rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors">
+            <a href="{{ route('orders', array_merge(request()->query(), ['status' => null])) }}"
+               class="whitespace-nowrap rounded-lg {{ !request('status') || request('status') == 'all' ? 'bg-primary text-white' : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800' }} px-4 py-2 text-sm font-medium transition-colors">
                 Barchasi
-            </button>
-            <button class="whitespace-nowrap rounded-lg bg-white dark:bg-gray-900 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            </a>
+            <a href="{{ route('orders', array_merge(request()->query(), ['status' => 'pending'])) }}"
+               class="whitespace-nowrap rounded-lg {{ request('status') == 'pending' ? 'bg-primary text-white' : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800' }} px-4 py-2 text-sm font-medium transition-colors">
                 Kutilmoqda
-            </button>
-            <button class="whitespace-nowrap rounded-lg bg-white dark:bg-gray-900 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            </a>
+            <a href="{{ route('orders', array_merge(request()->query(), ['status' => 'progress'])) }}"
+               class="whitespace-nowrap rounded-lg {{ request('status') == 'progress' ? 'bg-primary text-white' : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800' }} px-4 py-2 text-sm font-medium transition-colors">
                 Jarayonda
-            </button>
-            <button class="whitespace-nowrap rounded-lg bg-white dark:bg-gray-900 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            </a>
+            <a href="{{ route('orders', array_merge(request()->query(), ['status' => 'completed'])) }}"
+               class="whitespace-nowrap rounded-lg {{ request('status') == 'completed' ? 'bg-primary text-white' : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800' }} px-4 py-2 text-sm font-medium transition-colors">
                 Yakunlandi
-            </button>
+            </a>
         </div>
     </div>
 
@@ -50,60 +63,19 @@
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                @include('orders.partials.order-row', [
-                    'id' => '#48293',
-                    'title' => 'Marketing strategiyasi hujjati',
-                    'translator' => 'Azizbek T.',
-                    'avatar' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuDeysqd9iXo09ROQMWpp0wI-FfDyZjsmLljm9-0iLBP0d8IX_PyMEXBmJvzdkHhGlQZEqrqa0hBq2y6i-OqgcjgGY-HfyDpf1eQT84keOq9iZ_iGFwQhcJ24r3W2T4gvp44P6ax_EvKhn5Rkfn3UphhShlevuBoP7Eb-m3NNV7wZJmJs_ACcStMDF9mzj9lmFVPoJnBKs3ZofT7ySCB8vJU-efTduE9i0sT77kMDt_SLWNDD24Y3OW-zs394yaU-HUik9cRp5bwQWM',
-                    'status' => 'progress',
-                    'date' => '12 Okt, 2023',
-                    'price' => '150,000 UZS',
-                    'action' => 'visibility'
-                ])
-
-                @include('orders.partials.order-row', [
-                    'id' => '#48290',
-                    'title' => 'Texnik qo\'llanma tarjimasi',
-                    'translator' => 'Malika D.',
-                    'avatar' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuAxcRz68ZhVnNEb60j8ShuhUWDGBBOCaV2I0IwrI1ZJ4yZSj2_v1OrDm1NQzHNN4OK4FGrndV6OqpYapDzCBXkSpr77Hat35IscSsZPsf0XxCPV_uXskr6_kH7U-_8Y7IVawkbmf9aVmVuSde5IExEIyu16bZpE7RanIWBmQfJe-gDNLIm0TCYrWFbO0jHk2xWwiaSWy8LBKpJXJSL4LlA4Cj4O33WxJg_9Syxo6qAnBeRcOu1T-6NyJTi6vZMh1_nK5Ndc20KAZyg',
-                    'status' => 'pending',
-                    'date' => '10 Okt, 2023',
-                    'price' => '80,000 UZS',
-                    'action' => 'edit'
-                ])
-
-                @include('orders.partials.order-row', [
-                    'id' => '#48110',
-                    'title' => 'Veb-sayt lokalizatsiyasi',
-                    'translator' => 'Javlon B.',
-                    'avatar' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuDLCrhx47SxQuQAbYYB-P3MYDNU-go9XOV1pggEUaQg_iMOQI56Z6bps0BbVE--1pfBvPFQ1cHVMRaozb2GdQEeNayOd5V0GhITnbAifZ4ty3rGMUy-OjEHUnEPVQtomYrbrhQEzxcRLFxfMVGEuHA-zpbPaeq9hZEBfyJZuj-HUERjdNWH1CWjgg4lHiW36RwE4VDcdNnyFNsqpTnTH4sIwlKQpl4qDQ5luOcMAQ5LBg_q35U7UaBCKSzbVJMeUURee-Zci-q1FrM',
-                    'status' => 'completed',
-                    'date' => '05 Sent, 2023',
-                    'price' => '1,200,000 UZS',
-                    'action' => 'download'
-                ])
-
-                @include('orders.partials.order-row', [
-                    'id' => '#47992',
-                    'title' => 'Mobil ilova matnlari',
-                    'translator' => 'Sarvar K.',
-                    'avatar' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuCg2BPv2581z6XfON6gksSs7NHd1uitZURBOqKwKCJwqQSB8KPEUFYY-QupOXmVqvFZfIfkFLKeXVKdURlvx422gZoz8NKEJlb2QLxFHOqRcID9wGKgcoosSYG92xXlw-DwTG_U_QszptesmLTswapYFx8p7nwqWEZN-dryWJWt9Botx87GvJgpabNIB4MVd2pl08dRYrJ3ay8WbV9dRxQw5Y8V2LqNPmq6yrYgnez14_ZzmhqAVeSKPgnm_6bC7qu3LtAjvCH0YvI',
-                    'status' => 'completed',
-                    'date' => '28 Avg, 2023',
-                    'price' => '500,000 UZS',
-                    'action' => 'download'
-                ])
-
-                @include('orders.partials.order-row', [
-                    'id' => '#47900',
-                    'title' => 'Yuridik shartnoma',
-                    'translator' => null,
-                    'avatar' => null,
-                    'status' => 'pending',
-                    'date' => '20 Avg, 2023',
-                    'price' => '200,000 UZS',
-                    'action' => 'delete'
-                ])
+                @forelse($orders as $order)
+                    @include('orders.partials.order-row', $order)
+                @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                                <span class="material-symbols-outlined text-4xl mb-2">inbox</span>
+                                <h3 class="text-lg font-medium text-[#121117] dark:text-white mb-1">Buyurtmalar topilmadi</h3>
+                                <p class="text-sm">Hozircha hech qanday buyurtma yo'q yoki qidiruv bo'yicha natija topilmadi.</p>
+                            </div>
+                        </td>
+                    </tr>
+                @endforelse
                 </tbody>
             </table>
         </div>

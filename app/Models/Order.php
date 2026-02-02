@@ -44,4 +44,25 @@ class Order extends Model
     {
         return $this->belongsTo(AvailableLanguage::class, 'language_id');
     }
+
+    /**
+     * Get the related translation if exists - proper Eloquent relationship
+     */
+    public function translation()
+    {
+        return $this->hasOne(Translation::class, 'work_id', 'work_id')
+            ->where('translator_id', $this->translator_id)
+            ->where('language_id', $this->language_id);
+    }
+
+    /**
+     * Get the related translation (helper method)
+     */
+    public function getTranslation()
+    {
+        return Translation::where('work_id', $this->work_id)
+            ->where('translator_id', $this->translator_id)
+            ->where('language_id', $this->language_id)
+            ->first();
+    }
 }
