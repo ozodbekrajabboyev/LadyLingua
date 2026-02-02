@@ -15,5 +15,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
 });
 
+Route::get('/translation-detail', function (){
+    return view('translations.show');
+});
+
+Route::get('/profile-detail', function (){
+    return view('translators.profile');
+});
+
+Route::get('/order-create-page', function (){
+    return view('orders.order-page');
+});
+
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
