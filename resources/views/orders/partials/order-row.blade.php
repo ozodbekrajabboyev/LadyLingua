@@ -8,7 +8,13 @@
     <td class="px-6 py-4">
         @if($translator)
             <div class="flex items-center gap-3">
-                <div class="size-8 rounded-full bg-cover bg-center" style="background-image: url('{{ $avatar }}');"></div>
+                @if($avatar)
+                    <div class="size-8 rounded-full bg-cover bg-center" style="background-image: url('{{ $avatar }}');"></div>
+                @else
+                    <div class="flex size-8 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 text-xs font-bold text-gray-500 dark:text-gray-300">
+                        {{ substr($translator, 0, 1) }}
+                    </div>
+                @endif
                 <span class="text-sm text-[#121117] dark:text-white">{{ $translator }}</span>
             </div>
         @else
