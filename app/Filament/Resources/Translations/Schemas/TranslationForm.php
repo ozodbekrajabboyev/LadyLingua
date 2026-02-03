@@ -93,65 +93,37 @@ class TranslationForm
                     ->collapsible(),
 
                 Section::make('Qo\'shimcha ma\'lumotlar')
-                    ->description('Tarjima hujjati va ko\'rib chiqish sahifalari')
+                    ->description('Tarjima hujjatlari')
                     ->schema([
-                        FileUpload::make('upload_id')
-                            ->label('Tarjima hujjati (PDF)')
+                        FileUpload::make('preview_pdf_path')
+                            ->label('Ko\'rab chiqish uchun PDF')
                             ->disk('public')
-                            ->directory('translations')
+                            ->directory('translations/preview')
                             ->visibility('public')
                             ->preserveFilenames()
                             ->openable()
                             ->downloadable()
-                            ->previewable()
-
-                            // ✅ FAQAT PDF
                             ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(5120)
+                            ->required()
+                            ->helperText('Foydalanuvchilar ko\'rishi uchun PDF (maksimal 5MB)')
+                            ->columnSpanFull()
+                            ->storeFileNamesIn('preview_pdf_original_name'), // Add this
 
-                            // (ixtiyoriy, lekin tavsiya etiladi)
-                            ->rules(['mimes:pdf'])
-
-                            ->maxSize(10240) // 10MB
-                            ->helperText('Faqat PDF formatida yuklang (maksimal 10MB)')
-
-                            // 🔑 Edit paytida eski upload_id saqlanib qoladi
-                            ->dehydrated(fn ($state) => filled($state))
-
-                            ->saveUploadedFileUsing(function ($file, $get) {
-                                $translatorId = $get('translator_id');
-
-                                if (!$translatorId && auth()->user()?->role === 'translator') {
-                                    $translatorId = auth()->user()->translatorPortfolio?->id;
-                                }
-
-                                $upload = \App\Models\Upload::create([
-                                    'translator_id' => $translatorId,
-                                    'file_path' => $file->store('translations', 'public'),
-                                ]);
-
-                                return $upload->id; // FK — OK
-                            })
-        ->afterStateHydrated(function ($state, $set, $record) {
-                                if ($record && $record->upload_id) {
-                                    $upload = \App\Models\Upload::find($record->upload_id);
-                                    if ($upload && $upload->file_path) {
-                                        $set('upload_id', $upload->file_path);
-                                    }
-                                }
-                            })
-                            ->afterStateUpdated(function ($state, $get, $set, $record) {
-                                if ($state && $record) {
-                                    if ($record->upload_id) {
-                                        $oldUpload = \App\Models\Upload::find($record->upload_id);
-                                        if ($oldUpload && $oldUpload->file_path) {
-                                            \Storage::disk('public')->delete($oldUpload->file_path);
-                                            $oldUpload->delete();
-                                        }
-                                    }
-                                }
-                            })
-                            ->columnSpanFull(),
-
+                        FileUpload::make('full_pdf_path')
+                            ->label('To\'liq tarjima PDF')
+                            ->disk('public')
+                            ->directory('translations/full')
+                            ->visibility('public')
+                            ->preserveFilenames()
+                            ->openable()
+                            ->downloadable()
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(5120)
+                            ->required()
+                            ->helperText('To\'liq tarjima fayli (maksimal 5MB)')
+                            ->columnSpanFull()
+                            ->storeFileNamesIn('full_pdf_original_name'),
                         TextInput::make('preview_pages_cnt')
                             ->label('Ko\'rib chiqish sahifalari soni')
                             ->required()

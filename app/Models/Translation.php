@@ -17,6 +17,8 @@ class Translation extends Model
         'price',
         'upload_id',
         'preview_pages_cnt',
+        'preview_pdf_path',
+        'full_pdf_path',
     ];
 
     protected $casts = [
