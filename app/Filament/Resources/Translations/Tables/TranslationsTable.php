@@ -106,9 +106,17 @@ class TranslationsTable
                     ->suffix(' sahifa')
                     ->placeholder('—'),
 
-                TextColumn::make('upload.file_path')
-                    ->label('Hujjat')
-                    ->formatStateUsing(fn ($state) => $state ? '📄Yuklangan' : 'Fayl yo\'q')
+                TextColumn::make('preview_pdf_path')
+                    ->label('Ko\'rab chiqish PDF')
+                    ->formatStateUsing(fn ($state) => $state ? '📄Ko\'rab chiqish' : 'Fayl yo\'q')
+                    ->badge()
+                    ->placeholder("Topilmadi")
+                    ->color(fn ($state) => $state ? 'info' : 'gray')
+                    ->toggleable(),
+
+                TextColumn::make('full_pdf_path')
+                    ->label('To\'liq PDF')
+                    ->formatStateUsing(fn ($state) => $state ? '📄To\'liq fayl' : 'Fayl yo\'q')
                     ->badge()
                     ->placeholder("Topilmadi")
                     ->color(fn ($state) => $state ? 'success' : 'gray')
