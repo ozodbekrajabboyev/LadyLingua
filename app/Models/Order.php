@@ -60,6 +60,11 @@ class Order extends Model
      */
     public function getTranslation()
     {
+        // If no translator is assigned yet, return null
+        if (!$this->translator_id) {
+            return null;
+        }
+
         return Translation::where('work_id', $this->work_id)
             ->where('translator_id', $this->translator_id)
             ->where('language_id', $this->language_id)

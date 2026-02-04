@@ -51,8 +51,17 @@
         </div>
     </td>
     <td class="px-6 py-4 text-right">
-        <button class="rounded p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-[#121117] dark:hover:text-white transition-colors">
-            <span class="material-symbols-outlined text-[20px]">{{ $action }}</span>
-        </button>
+        @if($action === 'visibility' && isset($translation_id) && $translation_id)
+            {{-- Eye icon that redirects to translation page --}}
+            <a href="{{ route('translation.show', $translation_id) }}"
+               class="inline-block rounded p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-[#121117] dark:hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-[20px]">{{ $action }}</span>
+            </a>
+        @else
+            {{-- Regular action button for other actions --}}
+            <button class="rounded p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-[#121117] dark:hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-[20px]">{{ $action }}</span>
+            </button>
+        @endif
     </td>
 </tr>

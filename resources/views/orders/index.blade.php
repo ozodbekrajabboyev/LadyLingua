@@ -3,12 +3,47 @@
 @section('title', 'Buyurtmalarim - Tarjimonlar Platformasi')
 
 @section('content')
+    {{-- Success Message --}}
+    @if(session('success'))
+        <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <span class="material-symbols-outlined text-green-400">check_circle</span>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Error Message --}}
+    @if($errors->any())
+        <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <span class="material-symbols-outlined text-red-400">error</span>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800">Xatoliklar mavjud</h3>
+                    <div class="mt-2 text-sm text-red-700">
+                        <ul class="list-disc list-inside">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
         <div class="flex flex-col gap-2">
             <h1 class="text-3xl font-black leading-tight tracking-tight text-[#121117] dark:text-white md:text-4xl">Buyurtmalarim</h1>
             <p class="text-base text-gray-500 dark:text-gray-400">Faol va yakunlangan loyihalar ro'yxati</p>
         </div>
-        <a href="{{ route('translations') }}" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-white transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50">
+        <a href="{{ route('orders.create') }}" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-white transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50">
             <span class="material-symbols-outlined text-[20px]">add</span>
             Yangi buyurtma
         </a>
