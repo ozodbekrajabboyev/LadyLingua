@@ -164,6 +164,7 @@ class OrderController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
+            'author_name' => 'required|string|max:255',
             'translator_id' => 'required|exists:translator_portfolios,id',
             'language_id' => 'required|exists:available_languages,id',
             'deadline' => 'required|date|after:now',
@@ -175,7 +176,7 @@ class OrderController extends Controller
             $work = Work::create([
                 'title' => $request->title,
                 'original_language_id' => 1, // Default original language
-                'author_name' => Auth::user()->name ?? 'Unknown',
+                'author_name' => $request->author_name,
                 'description' => $request->description,
             ]);
 

@@ -36,6 +36,16 @@
                required>
     </x-form-field>
 
+    {{-- Author Name --}}
+    <x-form-field label="Muallif nomi" icon="person_outline">
+        <input name="author_name"
+               value="{{ old('author_name') }}"
+               class="form-input w-full rounded-lg text-[#121117] focus:ring-2 focus:ring-primary/20 border border-[#dcdce5] dark:border-gray-700 bg-white dark:bg-[#2a293d] focus:border-primary h-12 px-4 text-base font-normal"
+               type="text"
+               placeholder="Asar muallifining ismini kiriting..."
+               required>
+    </x-form-field>
+
     <div class="flex flex-col md:flex-row gap-5">
         {{-- Translator Selection --}}
         <x-form-field label="Tarjimon tanlang" icon="person">

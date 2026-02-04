@@ -26,6 +26,13 @@ class Translation extends Model
     ];
 
     /**
+     * Default attribute values
+     */
+    protected $attributes = [
+        'preview_pages_cnt' => 10, // Default preview pages count
+    ];
+
+    /**
      * Relationships
      */
     public function work()

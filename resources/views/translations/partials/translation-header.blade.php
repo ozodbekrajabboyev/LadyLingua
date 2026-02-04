@@ -38,12 +38,8 @@
                 </div>
 
                 <div class="flex items-center gap-3 mt-3">
-                    {{-- Rating --}}
-                    <div class="flex items-center text-yellow-500">
-                        <span class="material-symbols-outlined text-lg star-filled">star</span>
-                        <span class="font-semibold ml-1">{{ $translation['rating'] }}</span>
-                        <span class="text-xs text-gray-500 ml-1">({{ $translation['total_reviews'] }} sharh)</span>
-                    </div>
+                    {{-- Live Rating Stats --}}
+                    <livewire:translation-stats :translation-id="$translation['id']" />
 
                     {{-- Updated Time --}}
                     <span class="text-xs text-gray-500">{{ $translation['updated_at'] }} yangilangan</span>
