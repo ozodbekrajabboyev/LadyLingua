@@ -20,33 +20,18 @@
         <section class="w-full grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12">
             {{-- Sidebar --}}
             <div class="lg:col-span-1 space-y-6">
-                @include('translations.partials.rating-section', ['translation' => $translationData])
+                {{-- Live Rating Form Component --}}
+                <livewire:rating-form :translation-id="$translationData['id']" />
+
+                {{-- Live Comment Form Component --}}
+                <livewire:comment-form :translation-id="$translationData['id']" />
+
                 @include('translations.partials.translator-info', ['translation' => $translationData])
             </div>
 
-            {{-- Reviews List --}}
-            <div class="lg:col-span-2 space-y-4">
-                <h3 class="font-bold text-lg hidden lg:block mb-2">So'nggi fikrlar</h3>
-
-                @if(count($recentReviews) > 0)
-                    @foreach($recentReviews as $review)
-                        @include('translations.partials.review-card', ['review' => $review])
-                    @endforeach
-                @else
-                    <div class="text-center py-8">
-                        <div class="bg-gray-100 dark:bg-gray-800 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                            <span class="material-symbols-outlined text-gray-400 text-2xl">rate_review</span>
-                        </div>
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Hozircha fikrlar yo'q</h3>
-                        <p class="text-gray-500">Bu tarjima hali baholanmagan.</p>
-                    </div>
-                @endif
-
-                @if(count($recentReviews) > 0)
-                    <button class="w-full py-3 text-center text-primary text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition border border-dashed border-gray-300 dark:border-gray-700">
-                        Barcha fikrlarni ko'rish ({{ $translationData['total_reviews'] }})
-                    </button>
-                @endif
+            {{-- Live Reviews List Component --}}
+            <div class="lg:col-span-2">
+                <livewire:ratings-display :translation-id="$translationData['id']" />
             </div>
         </section>
 

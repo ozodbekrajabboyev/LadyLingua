@@ -66,7 +66,7 @@ class TranslationController extends Controller
 
         // Calculate translation statistics
         $avgRating = $translation->ratings->avg('stars') ?? 0;
-        $totalReviews = $translation->ratings->count();
+        $totalReviews = $translation->ratings->count() + $translation->comments->count();
 
         // Get recent reviews (limit to 5 for initial display)
         $recentReviews = $translation->ratings()
