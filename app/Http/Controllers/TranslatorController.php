@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TranslatorShowRequest;
 use App\Http\Traits\SanitizesHtmlContent;
 use App\Http\Traits\HandlesLanguageCodes;
 use App\Models\TranslatorPortfolio;
@@ -44,6 +45,85 @@ class TranslatorController extends Controller
             });
 
         return view('translators.index', compact('translators'));
+    }
+
+    /**
+     * Show individual translator profile
+     */
+    public function show($id, TranslatorShowRequest $request = null)
+    {
+        // Handle both GET requests (with route parameter) and POST requests (with form data)
+        if ($request && $request->has('id')) {
+            $id = $request->validated()['id'];
+        }
+
+        // Find translator with all necessary relationships
+        $translator = TranslatorPortfolio::with([
+            'user',
+            'translations.work.originalLanguage',
+            'translations.language',
+            'translations.ratings',
+            'languages'
+        ])
+        ->whereHas('user')
+        ->findOrFail($id);
+
+        // Calculate overall statistics
+        $allRatings = $translator->translations->flatMap(function($translation) {
+            return $translation->ratings;
+        });
+
+        $avgRating = $allRatings->avg('stars') ?? 0;
+        $totalReviews = $allRatings->count();
+        $completedProjects = $translator->translations->where('status', 'published')->count();
+
+        // Get completed translations for display
+        $completedTranslations = $translator->translations()
+            ->with(['work.originalLanguage', 'language', 'ratings'])
+            ->where('status', 'published')
+            ->latest('updated_at')
+            ->limit(6)
+            ->get()
+            ->map(function ($translation) {
+                $translationRating = $translation->ratings->avg('stars') ?? 0;
+                return [
+                    'id' => $translation->id,
+                    'title' => $translation->work->title,
+                    'description' => $this->getWorkDescription($translation->work),
+                    'language_from' => $this->getLanguageCode($translation->work->originalLanguage->lang_name),
+                    'language_to' => $this->getLanguageCode($translation->language->lang_name),
+                    'rating' => $translationRating > 0 ? number_format($translationRating, 1) : '0.0',
+                    'time' => $translation->updated_at->diffForHumans(),
+                ];
+            });
+
+        // Prepare translator data
+        $translatorData = [
+            'id' => $translator->id,
+            'name' => $translator->user->name,
+            'email' => $translator->user->email,
+            'avatar' => $this->getTranslatorImageUrl($translator->profile_image_url, $translator->user->name),
+            'rating' => $avgRating > 0 ? number_format($avgRating, 1) : '0.0',
+            'reviews' => $totalReviews,
+            'completed_projects' => $completedProjects,
+            'bio' => $this->cleanBioContent($translator->bio) ?? 'Professional translator with extensive experience in various fields.',
+            'languages' => $this->getTranslatorLanguages($translator),
+            'member_since' => $translator->user->created_at->format('M Y'),
+            'total_earnings' => $translator->total_earnings ?? 0,
+        ];
+
+        return view('translators.show', compact('translatorData', 'completedTranslations'));
+    }
+
+    /**
+     * Get work description with fallback to generated description
+     */
+    private function getWorkDescription($work)
+    {
+        if (!empty($work->description)) {
+            return $work->description;
+        }
+        return "'{$work->title}' asari muallif {$work->author_name} tomonidan yozilgan {$work->originalLanguage->lang_name} tilidagi asar.";
     }
 
     /**
