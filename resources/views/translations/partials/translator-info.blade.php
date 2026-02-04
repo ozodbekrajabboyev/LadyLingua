@@ -3,23 +3,32 @@
 
     {{-- Translator Info --}}
     <div class="flex items-center gap-3 mb-3">
-        <div class="h-12 w-12 rounded-full bg-cover bg-center"
-             data-alt="Translator profile photo"
-             style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCDNVTnC3Z8H188FD5lKl2zEH3OpaFlZJg180QVUjaNpu_7cCabARE3KDbYkwwovFrtg4AU2C8MuQC-wTn1j1EVHQhEs4uA2FuNTIP9TL8fAldphf7f40lemrgKiqWTx5l6ZRsv3YBgXph7HKQQB_HhCdwV--lSgDDdyvUejOAWQQYara3j4E-O4UFr2sBRP7Z2gps3Hacidc1JtxsYwZwUAGLOXDo_eQsvzVZ5eDwvJlspzWAmniRnVnAaM12fAo_qFIOleiSJf9g');">
+        <div class="h-12 w-12 rounded-full bg-gray-200 overflow-hidden ring-1 ring-gray-200 relative">
+            <img alt="{{ $translation['translator_name'] }}"
+                 class="h-full w-full object-cover"
+                 src="{{ $translation['translator_avatar'] }}"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold"
+                 style="display:none;">
+                {{ strtoupper(substr($translation['translator_name'], 0, 2)) }}
+            </div>
         </div>
         <div>
-            <p class="font-bold text-[#121117] dark:text-white">Azizbek Qodirov</p>
-            <p class="text-xs text-gray-500">Professional Tarjimon • 5 yillik tajriba</p>
+            <p class="font-bold text-[#121117] dark:text-white">{{ $translation['translator_name'] }}</p>
+            <p class="text-xs text-gray-500">Professional Tarjimon</p>
         </div>
     </div>
 
     {{-- Bio --}}
     <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-        Ingliz va Ispan tillaridan badiiy va ilmiy asarlarni yuqori sifatda tarjima qilaman.
+        {{ $translation['translator_name'] }} tomonidan yuqori sifatli tarjima.
     </p>
 
     {{-- View Profile Link --}}
-    <button class="w-full text-primary text-sm font-medium hover:underline text-left">
-        Tarjimon profilini ko'rish →
-    </button>
+    <form method="POST" action="{{ route('translator.show', $translation['translator_id']) }}">
+        @csrf
+        <button type="submit" class="w-full text-primary text-sm font-medium hover:underline text-left">
+            Tarjimon profilini ko'rish →
+        </button>
+    </form>
 </div>

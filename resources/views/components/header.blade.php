@@ -13,13 +13,13 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Navigation -->
-            <nav class="hidden lg:flex items-center space-x-1">
-                <a class="{{ request()->is('/') ? 'bg-primary/10 text-primary border-primary' : 'text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 border-transparent' }} px-4 py-2.5 text-sm font-semibold border-b-2 transition-all duration-200 rounded-t-lg" href="/">Explore</a>
-                <a class="{{ request()->is('translators') ? 'bg-primary/10 text-primary border-primary' : 'text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 border-transparent' }} px-4 py-2.5 text-sm font-semibold border-b-2 transition-all duration-200 rounded-t-lg" href="/translators">Tarjimonlar</a>
-                <a class="{{ request()->is('translations') ? 'bg-primary/10 text-primary border-primary' : 'text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 border-transparent' }} px-4 py-2.5 text-sm font-semibold border-b-2 transition-all duration-200 rounded-t-lg" href="/translations">Tarjimalar</a>
-                <a class="{{ request()->is('orders') ? 'bg-primary/10 text-primary border-primary' : 'text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 border-transparent' }} px-4 py-2.5 text-sm font-semibold border-b-2 transition-all duration-200 rounded-t-lg" href="/orders">Buyurtmalarim</a>
+            <nav class="hidden md:flex items-center gap-8">
+                <a class="{{ request()->is('/') ? 'text-primary text-sm font-semibold border-b-2 border-primary pb-1' : 'text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors' }}" href="/">Explore</a>
+                <a class="{{ request()->is('translators') ? 'text-primary text-sm font-semibold border-b-2 border-primary pb-1' : 'text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors' }}" href="/translators">Tarjimonlar</a>
+                <a class="{{ request()->is('translations') ? 'text-primary text-sm font-semibold border-b-2 border-primary pb-1' : 'text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors' }}" href="/translations">Tarjimalar</a>
+                @auth
+                    <a class="{{ request()->is('orders') ? 'text-primary text-sm font-semibold border-b-2 border-primary pb-1' : 'text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors' }}" href="/orders">Buyurtmalarim</a>
+                @endauth
             </nav>
 
             <!-- User Actions -->

@@ -1,5 +1,4 @@
-@props(['initials', 'name', 'time', 'rating', 'color', 'text'])
-
+{{-- Dynamic review card component --}}
 @php
     $colorClasses = [
         'blue' => 'bg-blue-100 text-blue-600',
@@ -10,7 +9,10 @@
         'red' => 'bg-red-100 text-red-600',
     ];
 
-    $avatarColor = $colorClasses[$color] ?? 'bg-gray-100 text-gray-600';
+    $colors = array_keys($colorClasses);
+    $selectedColor = $colors[crc32($review['user_name']) % count($colors)];
+    $avatarColor = $colorClasses[$selectedColor];
+    $initials = strtoupper(substr($review['user_name'], 0, 2));
 @endphp
 
 <div class="bg-white dark:bg-surface-dark p-5 rounded-xl border border-gray-100 dark:border-gray-800">
@@ -21,15 +23,15 @@
                 {{ $initials }}
             </div>
             <div>
-                <p class="font-bold text-sm text-[#121117] dark:text-white">{{ $name }}</p>
-                <p class="text-xs text-gray-400">{{ $time }}</p>
+                <p class="font-bold text-sm text-[#121117] dark:text-white">{{ $review['user_name'] }}</p>
+                <p class="text-xs text-gray-400">{{ $review['date'] }}</p>
             </div>
         </div>
 
         {{-- Rating Stars --}}
         <div class="flex text-yellow-500 text-sm">
             @for($i = 1; $i <= 5; $i++)
-                @if($i <= $rating)
+                @if($i <= $review['rating'])
                     <span class="material-symbols-outlined filled-icon text-[18px]">star</span>
                 @else
                     <span class="material-symbols-outlined text-[18px]">star</span>
@@ -40,6 +42,6 @@
 
     {{-- Review Text --}}
     <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-        {{ $text }}
+        {{ $review['comment'] ?: 'Ajoyib tarjima! Tavsiya qilaman.' }}
     </p>
 </div>

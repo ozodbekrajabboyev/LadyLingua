@@ -3,16 +3,29 @@
 
     {{-- Rating Display --}}
     <div class="flex items-end gap-2 mb-2">
-        <span class="text-5xl font-bold text-[#121117] dark:text-white">4.8</span>
+        <span class="text-5xl font-bold text-[#121117] dark:text-white">{{ $translation['rating'] }}</span>
         <div class="pb-2 text-yellow-500 flex text-xl">
-            <span class="material-symbols-outlined filled-icon">star</span>
-            <span class="material-symbols-outlined filled-icon">star</span>
-            <span class="material-symbols-outlined filled-icon">star</span>
-            <span class="material-symbols-outlined filled-icon">star</span>
-            <span class="material-symbols-outlined filled-icon" style="font-variation-settings: 'FILL' 0.5;">star_half</span>
+            @php
+                $rating = (float)$translation['rating'];
+                $fullStars = floor($rating);
+                $hasHalfStar = ($rating - $fullStars) >= 0.5;
+                $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+            @endphp
+
+            @for($i = 0; $i < $fullStars; $i++)
+                <span class="material-symbols-outlined filled-icon">star</span>
+            @endfor
+
+            @if($hasHalfStar)
+                <span class="material-symbols-outlined filled-icon" style="font-variation-settings: 'FILL' 0.5;">star_half</span>
+            @endif
+
+            @for($i = 0; $i < $emptyStars; $i++)
+                <span class="material-symbols-outlined">star</span>
+            @endfor
         </div>
     </div>
-    <p class="text-sm text-gray-500 mb-6">124 ta foydalanuvchi baholagan</p>
+    <p class="text-sm text-gray-500 mb-6">{{ $translation['total_reviews'] }} ta foydalanuvchi baholagan</p>
 
     <hr class="border-gray-100 dark:border-gray-800 mb-6"/>
 

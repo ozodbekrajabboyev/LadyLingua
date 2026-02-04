@@ -24,6 +24,7 @@
         <div class="space-y-0 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 shadow-sm">
             @forelse($translations as $translation)
                 @include('translations.partials.translation-item', [
+                    'id' => $translation['id'],
                     'title' => $translation['title'],
                     'language' => $translation['language'],
                     'description' => $translation['description'],

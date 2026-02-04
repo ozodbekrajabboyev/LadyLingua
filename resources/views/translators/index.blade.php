@@ -22,6 +22,7 @@
     <div class="space-y-4 mb-12">
         @forelse($translators as $translator)
             @include('translators.partials.translator-card', [
+                'id' => $translator['id'],
                 'name' => $translator['name'],
                 'avatar' => $translator['avatar'],
                 'rating' => $translator['rating'],
