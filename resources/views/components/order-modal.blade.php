@@ -9,7 +9,7 @@
         {{-- Modal Header --}}
         <div class="flex items-center justify-between px-8 pt-8 pb-2">
             <h2 class="text-[#121117] dark:text-white text-2xl font-bold tracking-tight">Buyurtma berish</h2>
-            <button class="text-[#656487] hover:text-[#121117] dark:hover:text-white transition-colors">
+            <button onclick="window.location.href='{{ route('orders') }}'" class="text-[#656487] hover:text-[#121117] dark:hover:text-white transition-colors">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
@@ -33,7 +33,7 @@
             {{ $slot }}
 
             <div class="flex items-center justify-end gap-4 pt-4">
-                <button class="px-6 py-2.5 text-sm font-bold text-[#656487] dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors" type="button">
+                <button onclick="window.location.href='{{ route('orders') }}'" class="px-6 py-2.5 text-sm font-bold text-[#656487] dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors" type="button">
                     Bekor qilish
                 </button>
                 <button class="flex items-center justify-center gap-2 px-8 py-2.5 bg-primary hover:bg-[#4338ca] text-white text-sm font-bold rounded-lg transition-all shadow-lg shadow-primary/20" type="submit">

@@ -11,6 +11,11 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/translations', [TranslationController::class, 'index'])->name('translations');
 Route::get('/translators', [TranslatorController::class, 'index'])->name('translators');
 
+// Authentication routes
+Route::get('/login', function() {
+    return redirect('/platform/login');
+})->name('login');
+
 // Show individual translator and translation - support both GET and POST methods
 Route::match(['GET', 'POST'], '/translator/{id}', [TranslatorController::class, 'show'])
     ->name('translator.show')
@@ -20,21 +25,12 @@ Route::match(['GET', 'POST'], '/translation/{id}', [TranslationController::class
     ->name('translation.show')
     ->middleware('throttle:30,1'); // 30 requests per minute
 
-
 Route::middleware('auth')->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
-});
 
-Route::get('/translation-detail', function (){
-    return view('translations.show');
-});
-
-Route::get('/profile-detail', function (){
-    return view('translators.profile');
-});
-
-Route::get('/order-create-page', function (){
-    return view('orders.order-page');
+    // Order creation routes
+    Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 });
 
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
