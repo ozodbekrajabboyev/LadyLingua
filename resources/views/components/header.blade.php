@@ -11,7 +11,9 @@
                 <a class="{{ request()->is('/') ? 'text-primary text-sm font-semibold border-b-2 border-primary pb-1' : 'text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors' }}" href="/">Explore</a>
                 <a class="{{ request()->is('translators') ? 'text-primary text-sm font-semibold border-b-2 border-primary pb-1' : 'text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors' }}" href="/translators">Tarjimonlar</a>
                 <a class="{{ request()->is('translations') ? 'text-primary text-sm font-semibold border-b-2 border-primary pb-1' : 'text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors' }}" href="/translations">Tarjimalar</a>
-                <a class="{{ request()->is('orders') ? 'text-primary text-sm font-semibold border-b-2 border-primary pb-1' : 'text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors' }}" href="/orders">Buyurtmalarim</a>
+                @auth
+                    <a class="{{ request()->is('orders') ? 'text-primary text-sm font-semibold border-b-2 border-primary pb-1' : 'text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors' }}" href="/orders">Buyurtmalarim</a>
+                @endauth
             </nav>
         </div>
         <div class="flex items-center gap-3">

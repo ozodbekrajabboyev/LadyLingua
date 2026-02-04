@@ -35,9 +35,12 @@
                 <div class="h-4 w-px bg-gray-200 dark:bg-gray-700"></div>
                 <span class="text-xs text-gray-400">{{ $time }}</span>
             </div>
-            <button class="text-primary text-sm font-bold hover:underline flex items-center gap-1">
-                Batafsil <span class="material-symbols-outlined text-lg">chevron_right</span>
-            </button>
+            <form method="POST" action="{{ route('translation.show', $id) }}" class="inline">
+                @csrf
+                <button type="submit" class="text-primary text-sm font-bold hover:underline flex items-center gap-1">
+                    Batafsil <span class="material-symbols-outlined text-lg">chevron_right</span>
+                </button>
+            </form>
         </div>
     </div>
 </div>
