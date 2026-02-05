@@ -9,7 +9,7 @@
                     </div>
                     <div class="flex flex-col">
                         <h1 class="text-2xl font-black tracking-tight text-primary">LadyLingo</h1>
-                        <span class="text-xs text-gray-500 dark:text-gray-400 font-medium tracking-wide uppercase">Professional Translation</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400 font-medium tracking-wide uppercase">Professional Tarjima</span>
                     </div>
                 </div>
             </div>

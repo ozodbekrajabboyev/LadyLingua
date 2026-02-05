@@ -11,18 +11,85 @@ use Illuminate\Support\Facades\Storage;
 class TranslationController extends Controller
 {
     use HandlesLanguageCodes;
-    public function index()
+    public function index(Request $request)
     {
-        // Get all published translations with all relationships using pagination
-        $translations = Translation::with([
+        // Get available languages for filter dropdown
+        $availableLanguages = \App\Models\AvailableLanguage::select('id', 'lang_name')
+            ->whereHas('translations', function($query) {
+                $query->where('status', 'published');
+            })
+            ->orWhereHas('works', function($query) {
+                $query->whereHas('translations', function($subQuery) {
+                    $subQuery->where('status', 'published');
+                });
+            })
+            ->distinct()
+            ->orderBy('lang_name')
+            ->get();
+
+        // If no languages found, add fallback options
+        if ($availableLanguages->isEmpty()) {
+            $availableLanguages = collect([
+                (object)['id' => 1, 'lang_name' => 'English'],
+                (object)['id' => 2, 'lang_name' => 'O\'zbekcha'],
+                (object)['id' => 3, 'lang_name' => 'Русский'],
+                (object)['id' => 4, 'lang_name' => 'Français'],
+            ]);
+        }
+
+        // Build query with filters and search
+        $query = Translation::with([
                 'work.originalLanguage',
                 'language',
                 'translator.user',
                 'ratings'
             ])
-            ->where('status', 'published')
-            ->latest('updated_at')
-            ->paginate(4) // 3 translations per page to show pagination with current data
+            ->where('status', 'published');
+
+        // Apply search filter
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->whereHas('work', function($q) use ($searchTerm) {
+                $q->where('title', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('author_name', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+
+        // Apply language filter
+        if ($request->filled('language')) {
+            $languageName = $request->language;
+            $query->whereHas('language', function($q) use ($languageName) {
+                $q->where('lang_name', 'LIKE', "%{$languageName}%");
+            })->orWhereHas('work.originalLanguage', function($q) use ($languageName) {
+                $q->where('lang_name', 'LIKE', "%{$languageName}%");
+            });
+        }
+
+        // Apply sorting
+        $sortBy = $request->get('sort', 'newest');
+        switch($sortBy) {
+            case 'popular':
+                $query->withCount('ratings')->orderByDesc('ratings_count');
+                break;
+            case 'rating':
+                $query->leftJoin('ratings', 'translations.id', '=', 'ratings.translation_id')
+                      ->selectRaw('translations.*, COALESCE(AVG(ratings.stars), 0) as avg_rating')
+                      ->groupBy('translations.id')
+                      ->orderByDesc('avg_rating');
+                break;
+            case 'title':
+                $query->join('works', 'translations.work_id', '=', 'works.id')
+                      ->orderBy('works.title');
+                break;
+            case 'newest':
+            default:
+                $query->latest('updated_at');
+                break;
+        }
+
+        // Get paginated results
+        $translations = $query->paginate(6)
             ->through(function ($translation) {
                 // Calculate average rating
                 $avgRating = $translation->ratings()->avg('stars') ?? 0;
@@ -39,7 +106,7 @@ class TranslationController extends Controller
                 ];
             });
 
-        return view('translations.index', compact('translations'));
+        return view('translations.index', compact('translations', 'availableLanguages'));
     }
 
     /**
