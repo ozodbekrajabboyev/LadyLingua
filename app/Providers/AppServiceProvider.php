@@ -27,8 +27,16 @@ class AppServiceProvider extends ServiceProvider
                     /** @var \App\Models\User|null $user */
                     $user = auth()->user();
 
-                    if ($user && $user->role === 'user') {
-                        return redirect('/');
+                    if ($user) {
+                        // Regular users go to home page
+                        if ($user->role === 'user') {
+                            return redirect('/')->with('success', 'Registration successful! Welcome to LadyLingua.');
+                        }
+
+                        // Admin and translator users stay in the panel
+                        if (in_array($user->role, ['admin', 'translator'])) {
+                            return redirect()->intended(Filament::getUrl());
+                        }
                     }
 
                     return redirect()->intended(Filament::getUrl());
@@ -44,8 +52,21 @@ class AppServiceProvider extends ServiceProvider
                     /** @var \App\Models\User|null $user */
                     $user = auth()->user();
 
-                    if ($user && ($user->role === 'user' || $user->status === 'blocked')) {
-                        return redirect('/');
+                    if ($user) {
+                        // Block users with blocked status
+                        if ($user->status === 'blocked') {
+                            return redirect('/')->with('error', 'Your account has been blocked.');
+                        }
+
+                        // Redirect regular users away from admin panel
+                        if ($user->role === 'user') {
+                            return redirect('/')->with('success', 'Welcome back!');
+                        }
+
+                        // Allow admin and translator users to access the panel
+                        if (in_array($user->role, ['admin', 'translator'])) {
+                            return redirect()->intended(Filament::getUrl());
+                        }
                     }
 
                     return redirect()->intended(Filament::getUrl());

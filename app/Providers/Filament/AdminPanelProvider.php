@@ -51,6 +51,8 @@ class AdminPanelProvider extends PanelProvider
                 fn () => view('filament.pages.auth.login-footer'),
             )
             ->registration(Register::class)
+            ->authGuard('web')
+            ->authPasswordBroker('users')
             ->colors([
                 'primary' => Color::Indigo,
                 'secondary' => Color::Gray,
