@@ -18,9 +18,16 @@ class WorkResource extends Resource
 {
     protected static ?string $model = Work::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAcademicCap;
 
     protected static ?string $recordTitleAttribute = 'Work';
+
+    // Uzbek translations
+    protected static ?string $modelLabel = 'Asar';
+
+    protected static ?string $pluralModelLabel = 'Asarlar';
+
+    protected static ?string $navigationLabel = 'Asarlar';
 
     public static function form(Schema $schema): Schema
     {

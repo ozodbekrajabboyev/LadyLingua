@@ -15,35 +15,61 @@ class AdminStatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
+        $totalTranslators = TranslatorPortfolio::count();
+        $totalWorks = Work::count();
+        $activeOrders = Order::whereIn('status', ['pending', 'accepted', 'in_progress'])->count();
+        $totalRevenue = Translation::sum('price');
+
         return [
-            Stat::make('Total Translators', TranslatorPortfolio::count())
-                ->description('Active translators in system')
+            Stat::make('Tarjimonlar', $totalTranslators)
+                ->description('Tizimda faol tarjimonlar')
                 ->descriptionIcon('heroicon-m-user-group')
                 ->color('success')
-                ->chart([7, 12, 15, 18, 22, 25, 30]),
+                ->icon('heroicon-o-users')
+                ->chart([7, 12, 15, 18, 22, 25, $totalTranslators])
+                ->extraAttributes([
+                    'class' => 'cursor-pointer hover:shadow-lg transition',
+                ]),
 
-            Stat::make('Total Works', Work::count())
-                ->description('Literary works available')
+            Stat::make('Asarlar', $totalWorks)
+                ->description('Mavjud adabiy asarlar')
                 ->descriptionIcon('heroicon-m-book-open')
                 ->color('info')
-                ->chart([3, 5, 8, 12, 15, 18, 20]),
+                ->icon('heroicon-o-book-open')
+                ->chart([3, 5, 8, 12, 15, 18, $totalWorks])
+                ->extraAttributes([
+                    'class' => 'cursor-pointer hover:shadow-lg transition',
+                ]),
 
-            Stat::make('Active Orders', Order::whereIn('status', ['pending', 'accepted', 'in_progress'])->count())
-                ->description('Orders in progress')
-                ->descriptionIcon('heroicon-m-shopping-cart')
+            Stat::make('Faol buyurtmalar', $activeOrders)
+                ->description('Jarayondagi buyurtmalar')
+                ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('warning')
-                ->chart([5, 8, 6, 10, 12, 8, 9]),
+                ->icon('heroicon-o-shopping-cart')
+                ->chart([5, 8, 6, 10, 12, 8, $activeOrders])
+                ->extraAttributes([
+                    'class' => 'cursor-pointer hover:shadow-lg transition',
+                ]),
 
-            Stat::make('Total Revenue', 'UZS ' . number_format(Translation::sum('price'), 2))
-                ->description('From all translations')
-                ->descriptionIcon('heroicon-m-currency-dollar')
+            Stat::make('Umumiy daromad', number_format($totalRevenue, 0, ',', ' ') . ' so\'m')
+                ->description('Barcha tarjimalardan')
+                ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success')
-                ->chart([100, 250, 400, 550, 700, 900, 1200]),
+                ->icon('heroicon-o-currency-dollar')
+                ->chart([100000, 250000, 400000, 550000, 700000, 900000, $totalRevenue])
+                ->extraAttributes([
+                    'class' => 'cursor-pointer hover:shadow-lg transition',
+                ]),
         ];
+    }
+
+    protected function getColumns(): int
+    {
+        return 2; // 2 columns on larger screens, will stack on mobile
     }
 
     public static function canView(): bool
     {
-        return auth()->user()->isAdmin();
+        return auth()->user()?->isAdmin() ?? false;
     }
 }
