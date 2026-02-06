@@ -25,7 +25,13 @@ class AdminAccess
             /** @var User $user */
             $user = auth()->user();
 
-            if ($user->role === 'user') {
+            // Block users with 'blocked' status
+            if ($user->status === 'blocked') {
+                return redirect('/')->with('error', 'Your account has been blocked.');
+            }
+
+            // Only allow admin and translator roles to access the panel
+            if (!in_array($user->role, ['admin', 'translator'])) {
                 return redirect('/')->with('error', 'Access denied to admin panel.');
             }
         }
