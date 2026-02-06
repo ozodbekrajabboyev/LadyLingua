@@ -15,10 +15,16 @@ class UsersTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Ism')
                     ->searchable(),
 
                 TextColumn::make('email')
-                    ->label('Email address')
+                    ->label('Email manzili')
+                    ->searchable(),
+
+                TextColumn::make('phone_number')
+                    ->label('Telefon raqami')
+                    ->formatStateUsing(fn (?string $state): string => $state ? '+998 ' . $state : '-')
                     ->searchable(),
 
                 TextColumn::make('role')

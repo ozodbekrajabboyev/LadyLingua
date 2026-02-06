@@ -13,18 +13,49 @@ class UserForm
     {
         return $schema
             ->components([
+                TextInput::make('name')
+                    ->label('Ism')
+                    ->required()
+                    ->maxLength(255),
+
+                TextInput::make('email')
+                    ->label('Email')
+                    ->email()
+                    ->required()
+                    ->maxLength(255),
+
+                TextInput::make('phone_number')
+                    ->label('Telefon raqami')
+                    ->prefix('+998')
+                    ->placeholder('90 123 45 67')
+                    ->mask('99 999 99 99')
+                    ->tel()
+                    ->maxLength(12)
+                    ->rules(['regex:/^[0-9\s]*$/'])
+                    ->helperText('Telefon raqamingizni +998 prefiksi bilan kiriting'),
+
+                TextInput::make('password')
+                    ->label('Parol')
+                    ->password()
+                    ->required()
+                    ->maxLength(255)
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->required(fn (string $context): bool => $context === 'create'),
+
                 Select::make('role')
+                    ->label('Rol')
                     ->options([
-                        'user' => 'User',
-                        'translator' => 'Translator',
+                        'user' => 'Foydalanuvchi',
+                        'translator' => 'Tarjimon',
                         'admin' => 'Admin',
                     ])
                     ->required(),
 
                 Select::make('status')
+                    ->label('Holat')
                     ->options([
-                        'active' => 'Active',
-                        'blocked' => 'Blocked',
+                        'active' => 'Faol',
+                        'blocked' => 'Bloklangan',
                     ])
                     ->required(),
             ]);
