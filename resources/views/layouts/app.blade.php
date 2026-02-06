@@ -11,6 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="{{ asset("favicon.svg") }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('css/translators-enhanced.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/explore-enhanced.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/chatbot-enhanced.css') }}">
 
     <script id="tailwind-config">
         tailwind.config = {
@@ -239,6 +241,9 @@
         </main>
 
         <x-footer />
+
+        <!-- Chatbot Component -->
+        <x-chatbot />
     </div>
 
     @stack('scripts')
