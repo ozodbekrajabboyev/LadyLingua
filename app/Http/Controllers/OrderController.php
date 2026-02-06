@@ -27,14 +27,24 @@ class OrderController extends Controller
             $query->where('user_id', Auth::id());
         }
 
-        // Search functionality
+        // Enhanced search functionality
         if ($request->filled('search')) {
             $search = $request->get('search');
             $query->where(function($q) use ($search) {
-                $q->where('id', 'like', "%{$search}%")
-                  ->orWhereHas('work', function($workQuery) use ($search) {
-                      $workQuery->where('title', 'like', "%{$search}%");
-                  });
+                // Search by ID (with or without # prefix)
+                $searchId = str_replace('#', '', $search);
+                if (is_numeric($searchId)) {
+                    $q->where('id', $searchId);
+                } else {
+                    // Search by project title, description, or translator name
+                    $q->whereHas('work', function($workQuery) use ($search) {
+                        $workQuery->where('title', 'like', "%{$search}%")
+                                 ->orWhere('author_name', 'like', "%{$search}%")
+                                 ->orWhere('description', 'like', "%{$search}%");
+                    })->orWhereHas('translator.user', function($translatorQuery) use ($search) {
+                        $translatorQuery->where('name', 'like', "%{$search}%");
+                    });
+                }
             });
         }
 
@@ -83,7 +93,7 @@ class OrderController extends Controller
         // Paginate results
         $orders = $query->paginate(10);
 
-        // Transform orders to include additional data needed for the view
+        // Transform orders to include additional data needed for the enhanced UI
         $orders->getCollection()->transform(function ($order) {
             // Find related translation if exists using the helper method
             $translation = $order->getTranslation();
@@ -118,6 +128,7 @@ class OrderController extends Controller
                 }
             }
 
+            // Enhanced data for better UI
             return [
                 'id' => '#' . str_pad($order->id, 5, '0', STR_PAD_LEFT),
                 'title' => $order->work->title ?? 'N/A',
@@ -129,15 +140,40 @@ class OrderController extends Controller
                 'date' => $order->created_at->format('d M, Y'),
                 'price' => $translation ? number_format($translation->price, 0, '.', ',') . ' UZS' : 'Narx belgilanmagan',
                 'action' => $this->getActionForStatus($order->status, $translation),
-                'deadline' => $order->deadline->format('d M, Y'),
+                'deadline' => $order->deadline ? $order->deadline->format('d M, Y') : null,
                 'raw_status' => $order->status,
                 'translation_exists' => $translation !== null,
                 'translation_status' => $translation ? $translation->status : null,
-                'translation_id' => $translation ? $translation->id : null
+                'translation_id' => $translation ? $translation->id : null,
+                // Additional data for enhanced UI
+                'work_description' => $order->work->description ?? null,
+                'language_pair' => ($order->work->originalLanguage->lang_name ?? 'N/A') . ' → ' . ($order->language->lang_name ?? 'N/A'),
+                'created_at_human' => $order->created_at->diffForHumans(),
+                'priority' => $this->calculateOrderPriority($order, $translation),
             ];
         });
 
         return view('orders.index', compact('orders'));
+    }
+
+    /**
+     * Calculate order priority for UI enhancements
+     */
+    private function calculateOrderPriority($order, $translation)
+    {
+        if ($translation && $translation->status === 'published') {
+            return 'low'; // Completed orders have low priority
+        }
+
+        if ($order->deadline && $order->deadline->isPast()) {
+            return 'high'; // Overdue orders have high priority
+        }
+
+        if ($order->deadline && $order->deadline->diffInDays(now()) <= 3) {
+            return 'medium'; // Due soon orders have medium priority
+        }
+
+        return 'low'; // Default priority
     }
 
     /**

@@ -1,33 +1,55 @@
-{{-- Statistics Section --}}
-<section class="w-full bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl p-6">
-    <h2 class="text-lg font-bold text-[#121117] dark:text-white mb-4">Statistika</h2>
+{{-- Statistics Section - Database Data Only --}}
+<section class="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl p-6">
+    <!-- Header -->
+    <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary">analytics</span>
+        </div>
+        <div>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Statistika</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Asosiy ko'rsatkichlar</p>
+        </div>
+    </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <!-- Main Stats Grid - Real Database Data Only -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         {{-- Completed Projects --}}
-        <div class="text-center">
-            <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-lg p-4 mb-2">
-                <span class="material-symbols-outlined text-green-600 text-3xl">task_alt</span>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-xl p-6">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-xl">task_alt</span>
+                </div>
+                <div class="text-right">
+                    <div class="text-2xl font-bold text-green-700 dark:text-green-300">{{ $translator['completed_projects'] }}</div>
+                </div>
             </div>
-            <div class="text-2xl font-bold text-[#121117] dark:text-white">{{ $translator['completed_projects'] }}</div>
-            <div class="text-sm text-gray-500">Bajarilgan loyiha</div>
+            <div class="text-sm font-medium text-green-800 dark:text-green-200">Bajarilgan loyiha</div>
         </div>
 
         {{-- Total Reviews --}}
-        <div class="text-center">
-            <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/30 dark:to-yellow-800/30 rounded-lg p-4 mb-2">
-                <span class="material-symbols-outlined text-yellow-600 text-3xl">star</span>
+        <div class="bg-gradient-to-br from-yellow-50 to-amber-100 dark:from-yellow-900/30 dark:to-amber-900/30 rounded-xl p-6">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-xl">star</span>
+                </div>
+                <div class="text-right">
+                    <div class="text-2xl font-bold text-yellow-700 dark:text-yellow-300">{{ $translator['reviews'] }}</div>
+                </div>
             </div>
-            <div class="text-2xl font-bold text-[#121117] dark:text-white">{{ $translator['reviews'] }}</div>
-            <div class="text-sm text-gray-500">Jami sharh</div>
+            <div class="text-sm font-medium text-yellow-800 dark:text-yellow-200">Jami sharh</div>
         </div>
 
         {{-- Average Rating --}}
-        <div class="text-center">
-            <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg p-4 mb-2">
-                <span class="material-symbols-outlined text-blue-600 text-3xl">trending_up</span>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-xl p-6">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white text-xl">trending_up</span>
+                </div>
+                <div class="text-right">
+                    <div class="text-2xl font-bold text-blue-700 dark:text-blue-300">{{ $translator['rating'] }}</div>
+                </div>
             </div>
-            <div class="text-2xl font-bold text-[#121117] dark:text-white">{{ $translator['rating'] }}</div>
-            <div class="text-sm text-gray-500">O'rtacha reyting</div>
+            <div class="text-sm font-medium text-blue-800 dark:text-blue-200">O'rtacha reyting</div>
         </div>
     </div>
 </section>
