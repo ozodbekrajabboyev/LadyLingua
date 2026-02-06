@@ -20,6 +20,16 @@ class Register extends BaseRegister
             ]);
     }
 
+    protected function getNameFormComponent(): TextInput
+    {
+        return TextInput::make('name')
+            ->label('IFSH')
+            ->required()
+            ->maxLength(255)
+            ->autofocus();
+    }
+
+
     protected function getPhoneFormComponent(): TextInput
     {
         return TextInput::make('phone_number')
