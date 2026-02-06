@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Register;
 use App\Filament\Widgets\AdminStatsOverview;
 use App\Filament\Widgets\MyActiveOrders;
 use App\Filament\Widgets\RecentOrders;
@@ -46,7 +47,7 @@ class AdminPanelProvider extends PanelProvider
                 'panels::auth.register.form.after',
                 fn () => view('filament.pages.auth.login-footer'),
             )
-            ->registration()
+            ->registration(Register::class)
             ->colors([
                 'primary' => Color::Indigo,
                 'secondary' => Color::Gray,

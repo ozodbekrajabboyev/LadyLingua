@@ -16,6 +16,11 @@ class AdminAccess
      */
     public function handle(Request $request, Closure $next)
     {
+        // Allow access to registration and login pages
+        if ($request->routeIs('filament.admin.auth.register') || $request->routeIs('filament.admin.auth.login')) {
+            return $next($request);
+        }
+
         if (auth()->check()) {
             /** @var User $user */
             $user = auth()->user();

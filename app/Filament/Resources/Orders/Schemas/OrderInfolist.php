@@ -98,21 +98,35 @@ class OrderInfolist
                             ->copyable()
                             ->placeholder('Email yo\'q'),
 
-                        TextEntry::make('id')
+                        TextEntry::make('user.phone_number')
+                            ->label('Mijoz telefon raqam')
+                            ->icon('heroicon-o-phone')
+                            ->iconColor('green')
+                            ->copyable()
+                            ->formatStateUsing(fn (?string $state): string => $state ? '+998 ' . $state : 'Telefon raqami yo\'q')
+                            ->placeholder('Telefon raqami yo\'q'),
+
+                        TextEntry::make('translator.user.name')
                             ->label('Tarjimon')
                             ->icon('heroicon-o-academic-cap')
                             ->iconColor('primary')
                             ->weight(FontWeight::SemiBold)
-                            ->formatStateUsing(fn () => auth()->user()->name)
                             ->placeholder('Tayinlanmagan'),
 
-                        TextEntry::make('id')
+                        TextEntry::make('translator.user.email')
                             ->label('Tarjimon email')
                             ->icon('heroicon-o-envelope')
                             ->iconColor('gray')
                             ->copyable()
-                            ->formatStateUsing(fn () => auth()->user()->email)
                             ->placeholder('Email yo\'q'),
+
+                        TextEntry::make('translator.user.phone_number')
+                            ->label('Tarjimon telefon raqam')
+                            ->icon('heroicon-o-phone')
+                            ->iconColor('blue')
+                            ->copyable()
+                            ->formatStateUsing(fn (?string $state): string => $state ? '+998 ' . $state : 'Telefon raqami yo\'q')
+                            ->placeholder('Telefon raqami yo\'q'),
                     ]),
 
                 Section::make('Texnik ma\'lumotlar')
