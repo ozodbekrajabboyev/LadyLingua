@@ -97,56 +97,161 @@
                             </div>
                         </div>
 
-                        <!-- Project Title -->
-                        <div class="space-y-2">
+                        <!-- Work Selection Type -->
+                        <div class="space-y-4">
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                                 <span class="flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-lg">title</span>
-                                    Asar nomi
+                                    <span class="material-symbols-outlined text-lg">library_books</span>
+                                    Asar tanlash usuli
                                     <span class="text-red-500">*</span>
                                 </span>
                             </label>
-                            <input name="title"
-                                   value="{{ old('title') }}"
-                                   class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 transition-all duration-200"
-                                   type="text"
-                                   placeholder="Masalan: 'Sherlock Holmes hikoyalari'"
-                                   required>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Asar yoki matnning to'liq nomini kiriting</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="work_selection_type" value="existing"
+                                           class="peer sr-only" {{ old('work_selection_type') == 'existing' ? 'checked' : '' }}>
+                                    <div class="p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50 transition-all">
+                                        <div class="flex items-center gap-3">
+                                            <span class="material-symbols-outlined text-primary">search</span>
+                                            <div>
+                                                <h4 class="font-semibold text-gray-900 dark:text-white">Mavjud asardan tanlash</h4>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">Bizning bazadan asar qidiring</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="work_selection_type" value="new"
+                                           class="peer sr-only" {{ old('work_selection_type') == 'new' || !old('work_selection_type') ? 'checked' : '' }}>
+                                    <div class="p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50 transition-all">
+                                        <div class="flex items-center gap-3">
+                                            <span class="material-symbols-outlined text-primary">add_circle</span>
+                                            <div>
+                                                <h4 class="font-semibold text-gray-900 dark:text-white">Yangi asar qo'shish</h4>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">Yangi asar ma'lumotlarini kiriting</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
 
-                        <!-- Author Name -->
-                        <div class="space-y-2">
+                        <!-- Existing Work Selection -->
+                        <div id="existing-work-section" class="space-y-4" style="display: none;">
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                                 <span class="flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-lg">person_outline</span>
-                                    Muallif nomi
-                                    <span class="text-red-500">*</span>
+                                    <span class="material-symbols-outlined text-lg">search</span>
+                                    Asar qidirish
                                 </span>
                             </label>
-                            <input name="author_name"
-                                   value="{{ old('author_name') }}"
-                                   class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 transition-all duration-200"
-                                   type="text"
-                                   placeholder="Masalan: Arthur Conan Doyle"
-                                   required>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Asar muallifining to'liq ismini kiriting</p>
+
+                            <div class="relative">
+                                <input type="text" id="work-search"
+                                       class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 transition-all duration-200"
+                                       placeholder="Asar nomi yoki muallif ismini kiriting..."
+                                       autocomplete="off">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="material-symbols-outlined text-gray-400">search</span>
+                                </div>
+                            </div>
+
+                            <!-- Search Results -->
+                            <div id="search-results" class="hidden border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 max-h-64 overflow-y-auto"></div>
+
+                            <!-- Selected Work Display -->
+                            <div id="selected-work" class="hidden p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-green-800 dark:text-green-300" id="selected-work-title"></h4>
+                                        <p class="text-sm text-green-600 dark:text-green-400" id="selected-work-author"></p>
+                                        <p class="text-xs text-green-500 dark:text-green-500 mt-1" id="selected-work-lang"></p>
+                                    </div>
+                                    <button type="button" id="clear-selection" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200">
+                                        <span class="material-symbols-outlined">close</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="existing_work_id" id="existing_work_id">
                         </div>
 
-                        <!-- Project Description -->
-                        <div class="space-y-2">
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                <span class="flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-lg">notes</span>
-                                    Asar tavsifi
-                                    <span class="text-red-500">*</span>
-                                </span>
-                            </label>
-                            <textarea name="description"
-                                      class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 min-h-[120px] resize-none transition-all duration-200"
-                                      placeholder="Loyiha haqida batafsil ma'lumot: janr, hajmi, o'ziga xos talablar va boshqa muhim tafsilotlar..."
-                                      required>{{ old('description') }}</textarea>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Tarjimonning ishini yaxshiroq bajarishi uchun batafsil ma'lumot bering</p>
+                        <!-- New Work Fields -->
+                        <div id="new-work-section" class="space-y-6">
+                            <!-- Project Title -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                    <span class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-lg">title</span>
+                                        Asar nomi
+                                        <span class="text-red-500">*</span>
+                                    </span>
+                                </label>
+                                <input name="title"
+                                       value="{{ old('title') }}"
+                                       class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 transition-all duration-200"
+                                       type="text"
+                                       placeholder="Masalan: 'Sherlock Holmes hikoyalari'">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Asar yoki matnning to'liq nomini kiriting</p>
+                            </div>
+
+                            <!-- Author Name -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                    <span class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-lg">person_outline</span>
+                                        Muallif nomi
+                                        <span class="text-red-500">*</span>
+                                    </span>
+                                </label>
+                                <input name="author_name"
+                                       value="{{ old('author_name') }}"
+                                       class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 transition-all duration-200"
+                                       type="text"
+                                       placeholder="Masalan: Arthur Conan Doyle">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Asar muallifining to'liq ismini kiriting</p>
+                            </div>
+
+                            <!-- Original Language -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                    <span class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-lg">translate</span>
+                                        Asl tili
+                                    </span>
+                                </label>
+                                <div class="relative">
+                                    <select name="original_language_id"
+                                            class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white appearance-none transition-all duration-200">
+                                        <option value="">Asl tilini tanlang (ixtiyoriy)</option>
+                                        @foreach($languages as $language)
+                                            <option value="{{ $language->id }}" {{ old('original_language_id') == $language->id ? 'selected' : '' }}>
+                                                {{ $language->lang_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <span class="material-symbols-outlined text-gray-400">expand_more</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Asar qaysi tildan tarjima qilinadi</p>
+                            </div>
+
+                            <!-- Project Description -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                    <span class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-lg">notes</span>
+                                        Asar tavsifi
+                                        <span class="text-red-500">*</span>
+                                    </span>
+                                </label>
+                                <textarea name="description"
+                                          class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 min-h-[120px] resize-none transition-all duration-200"
+                                          placeholder="Loyiha haqida batafsil ma'lumot: janr, hajmi, o'ziga xos talablar va boshqa muhim tafsilotlar...">{{ old('description') }}</textarea>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Tarjimonning ishini yaxshiroq bajarishi uchun batafsil ma'lumot bering</p>
+                            </div>
                         </div>
                     </div>
 
@@ -343,12 +448,133 @@
     @push('scripts')
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Work selection functionality
+        const existingWorkRadio = document.querySelector('input[name="work_selection_type"][value="existing"]');
+        const newWorkRadio = document.querySelector('input[name="work_selection_type"][value="new"]');
+        const existingWorkSection = document.getElementById('existing-work-section');
+        const newWorkSection = document.getElementById('new-work-section');
+        const workSearch = document.getElementById('work-search');
+        const searchResults = document.getElementById('search-results');
+        const selectedWork = document.getElementById('selected-work');
+        const existingWorkId = document.getElementById('existing_work_id');
+
+        // Toggle sections based on selection
+        function toggleWorkSections() {
+            if (existingWorkRadio.checked) {
+                existingWorkSection.style.display = 'block';
+                newWorkSection.style.display = 'none';
+                // Remove required attributes from new work fields
+                newWorkSection.querySelectorAll('input, textarea').forEach(input => {
+                    input.removeAttribute('required');
+                });
+            } else {
+                existingWorkSection.style.display = 'none';
+                newWorkSection.style.display = 'block';
+                // Add required attributes to new work fields
+                newWorkSection.querySelector('input[name="title"]').setAttribute('required', '');
+                newWorkSection.querySelector('input[name="author_name"]').setAttribute('required', '');
+                newWorkSection.querySelector('textarea[name="description"]').setAttribute('required', '');
+                // Clear existing work selection
+                clearWorkSelection();
+            }
+        }
+
+        // Initialize on page load
+        toggleWorkSections();
+
+        // Listen for radio button changes
+        existingWorkRadio.addEventListener('change', toggleWorkSections);
+        newWorkRadio.addEventListener('change', toggleWorkSections);
+
+        // Work search functionality
+        let searchTimeout;
+        workSearch.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                searchResults.classList.add('hidden');
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                searchWorks(query);
+            }, 300);
+        });
+
+        function searchWorks(query) {
+            fetch(`{{ route('works.search') }}?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(works => {
+                    displaySearchResults(works);
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    searchResults.innerHTML = '<div class="p-4 text-red-600">Qidirishda xatolik yuz berdi</div>';
+                    searchResults.classList.remove('hidden');
+                });
+        }
+
+        function displaySearchResults(works) {
+            if (works.length === 0) {
+                searchResults.innerHTML = '<div class="p-4 text-gray-500 dark:text-gray-400">Hech qanday asar topilmadi</div>';
+            } else {
+                const resultsHTML = works.map(work => `
+                    <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-600 last:border-0"
+                         onclick="selectWork(${work.id}, '${work.title}', '${work.author_name}', '${work.original_language || 'Noma\'lum'}')">
+                        <div class="font-semibold text-gray-900 dark:text-white">${work.title}</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Muallif: ${work.author_name}</div>
+                        ${work.original_language ? `<div class="text-xs text-gray-500 dark:text-gray-500">Asl tili: ${work.original_language}</div>` : ''}
+                    </div>
+                `).join('');
+                searchResults.innerHTML = resultsHTML;
+            }
+            searchResults.classList.remove('hidden');
+        }
+
+        // Select work function (global scope for onclick)
+        window.selectWork = function(id, title, author, originalLang) {
+            existingWorkId.value = id;
+            document.getElementById('selected-work-title').textContent = title;
+            document.getElementById('selected-work-author').textContent = `Muallif: ${author}`;
+            document.getElementById('selected-work-lang').textContent = `Asl tili: ${originalLang}`;
+
+            selectedWork.classList.remove('hidden');
+            searchResults.classList.add('hidden');
+            workSearch.value = `${title} - ${author}`;
+        };
+
+        // Clear work selection
+        function clearWorkSelection() {
+            existingWorkId.value = '';
+            selectedWork.classList.add('hidden');
+            searchResults.classList.add('hidden');
+            workSearch.value = '';
+        }
+
+        // Clear selection button
+        document.getElementById('clear-selection').addEventListener('click', clearWorkSelection);
+
+        // Hide search results when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!workSearch.contains(event.target) && !searchResults.contains(event.target)) {
+                searchResults.classList.add('hidden');
+            }
+        });
+
         // Form validation and UX improvements
         const form = document.querySelector('form');
         const submitBtn = document.querySelector('button[type="submit"]');
 
         // Enhanced form submission
         form.addEventListener('submit', function(e) {
+            // Validate work selection
+            if (existingWorkRadio.checked && !existingWorkId.value) {
+                e.preventDefault();
+                alert('Iltimos, mavjud asarlardan birini tanlang yoki yangi asar yaratish rejimini tanlang.');
+                return;
+            }
+
             // Add loading state
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">hourglass_empty</span> Jo\'natilmoqda...';
@@ -362,17 +588,6 @@
             }, 10000);
         });
 
-        // Form field enhancements - simplified
-        const formFields = document.querySelectorAll('input, select, textarea');
-        formFields.forEach(field => {
-            field.addEventListener('focus', function() {
-                // Simple focus styling handled by CSS
-            });
-
-            field.addEventListener('blur', function() {
-                // Simple blur styling handled by CSS
-            });
-        });
 
         // Deadline validation
         const deadlineInput = document.querySelector('input[name="deadline"]');

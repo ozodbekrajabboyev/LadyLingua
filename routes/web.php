@@ -31,6 +31,9 @@ Route::middleware('auth')->group(function () {
     // Order creation routes
     Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+
+    // AJAX route for searching existing works
+    Route::get('/api/works/search', [OrderController::class, 'searchWorks'])->name('works.search');
 });
 
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
