@@ -187,34 +187,81 @@ class OrderController extends Controller
         // Get available translators for the form
         $translators = \App\Models\TranslatorPortfolio::with('user')->get();
 
-        return view('orders.order-page', compact('languages', 'translators'));
+        // Get existing works for selection
+        $works = Work::with('originalLanguage')->orderBy('title')->get();
+
+        return view('orders.order-page', compact('languages', 'translators', 'works'));
+    }
+
+    /**
+     * Search for existing works (AJAX endpoint)
+     */
+    public function searchWorks(Request $request)
+    {
+        $query = $request->get('query', '');
+
+        $works = Work::with('originalLanguage')
+            ->where('title', 'like', "%{$query}%")
+            ->orWhere('author_name', 'like', "%{$query}%")
+            ->orderBy('title')
+            ->limit(10)
+            ->get();
+
+        return response()->json($works->map(function ($work) {
+            return [
+                'id' => $work->id,
+                'title' => $work->title,
+                'author_name' => $work->author_name,
+                'description' => $work->description,
+                'original_language' => $work->originalLanguage ? $work->originalLanguage->lang_name : null,
+                'display_text' => $work->title . ' - ' . $work->author_name
+            ];
+        }));
     }
 
     /**
      * Store a newly created order in storage
      *
+     * Users can either select an existing work or create a new one.
      * Users select a translator from available options when creating an order.
      * The selected translator receives the order in 'pending' status for approval.
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'author_name' => 'required|string|max:255',
+        // Validate common fields
+        $rules = [
+            'work_selection_type' => 'required|in:existing,new',
             'translator_id' => 'required|exists:translator_portfolios,id',
             'language_id' => 'required|exists:available_languages,id',
             'deadline' => 'required|date|after:now',
-            'description' => 'required|string',
-        ]);
+        ];
+
+        // Add conditional validation based on work selection type
+        if ($request->work_selection_type === 'existing') {
+            $rules['existing_work_id'] = 'required|exists:works,id';
+        } else {
+            $rules['title'] = 'required|string|max:255';
+            $rules['author_name'] = 'required|string|max:255';
+            $rules['description'] = 'required|string';
+            $rules['original_language_id'] = 'nullable|exists:available_languages,id';
+        }
+
+        $request->validate($rules);
 
         try {
-            // First create the work
-            $work = Work::create([
-                'title' => $request->title,
-                'original_language_id' => 1, // Default original language
-                'author_name' => $request->author_name,
-                'description' => $request->description,
-            ]);
+            // Handle work creation or selection
+            if ($request->work_selection_type === 'existing') {
+                // Use existing work
+                $work = Work::findOrFail($request->existing_work_id);
+            } else {
+                // Create new work
+                $work = Work::create([
+                    'title' => $request->title,
+                    'original_language_id' => $request->original_language_id ?? 1, // Default original language if not specified
+                    'author_name' => $request->author_name,
+                    'description' => $request->description,
+                ]);
+            }
 
             // Create the order with user-selected translator
             $order = Order::create([
