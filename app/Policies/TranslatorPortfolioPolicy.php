@@ -13,8 +13,7 @@ class TranslatorPortfolioPolicy
      */
     public function viewAny(User $user): bool
     {
-        return auth()->user()->role === 'admin';
-//        return false;
+        return $user->isAdmin();
     }
 
     /**
@@ -22,9 +21,7 @@ class TranslatorPortfolioPolicy
      */
     public function view(User $user, TranslatorPortfolio $translatorPortfolio): bool
     {
-//        return auth()->user()->role === 'admin';
-
-        return false;
+        return $user->isAdmin() || ($user->isTranslator() && $user->translatorPortfolio && $user->translatorPortfolio->id === $translatorPortfolio->id);
     }
 
     /**
@@ -40,8 +37,7 @@ class TranslatorPortfolioPolicy
      */
     public function update(User $user, TranslatorPortfolio $translatorPortfolio): bool
     {
-        return auth()->user()->role !== 'admin';
-
+        return $user->isAdmin() || ($user->isTranslator() && $user->translatorPortfolio && $user->translatorPortfolio->id === $translatorPortfolio->id);
     }
 
     /**

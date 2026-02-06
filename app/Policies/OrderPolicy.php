@@ -13,8 +13,7 @@ class OrderPolicy
      */
     public function viewAny(User $user): bool
     {
-        return auth()->user()->role === 'translator' || auth()->user()->role === 'user';
-//        return false;
+        return $user->isAdmin() || $user->isTranslator() || $user->role === 'user';
     }
 
     /**
@@ -22,7 +21,7 @@ class OrderPolicy
      */
     public function view(User $user, Order $order): bool
     {
-        return auth()->user()->role === 'translator';
+        return $user->isAdmin() || $user->isTranslator();
     }
 
     /**
@@ -30,7 +29,7 @@ class OrderPolicy
      */
     public function create(User $user): bool
     {
-        return auth()->user()->role === 'user';
+        return $user->isAdmin() || $user->role === 'user';
     }
 
     /**
@@ -38,7 +37,7 @@ class OrderPolicy
      */
     public function update(User $user, Order $order): bool
     {
-        return auth()->user()->role === 'translator';
+        return $user->isAdmin() || $user->isTranslator();
     }
 
     /**
