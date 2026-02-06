@@ -27,16 +27,8 @@ class AppServiceProvider extends ServiceProvider
                     /** @var \App\Models\User|null $user */
                     $user = auth()->user();
 
-                    if ($user) {
-                        // Regular users go to home page
-                        if ($user->role === 'user') {
-                            return redirect('/')->with('success', 'Registration successful! Welcome to LadyLingua.');
-                        }
-
-                        // Admin and translator users stay in the panel
-                        if (in_array($user->role, ['admin', 'translator'])) {
-                            return redirect()->intended(Filament::getUrl());
-                        }
+                    if ($user && $user->role === 'user') {
+                        return redirect('/');
                     }
 
                     return redirect()->intended(Filament::getUrl());
@@ -49,27 +41,41 @@ class AppServiceProvider extends ServiceProvider
             return new class extends LoginResponse {
                 public function toResponse($request): \Illuminate\Http\RedirectResponse|\Livewire\Features\SupportRedirects\Redirector
                 {
-                    /** @var \App\Models\User|null $user */
-                    $user = auth()->user();
+                    try {
+                        /** @var \App\Models\User|null $user */
+                        $user = auth()->user();
 
-                    if ($user) {
-                        // Block users with blocked status
-                        if ($user->status === 'blocked') {
-                            return redirect('/')->with('error', 'Your account has been blocked.');
+                        if ($user) {
+                            // Ensure user model is fully loaded (production safety)
+                            $user = $user->fresh();
+
+                            // Block users with blocked status
+                            if ($user && isset($user->status) && $user->status === 'blocked') {
+                                auth()->logout();
+                                return redirect('/')->with('error', 'Your account has been blocked.');
+                            }
+
+                            // Redirect regular users away from admin panel
+                            if ($user && $user->role === 'user') {
+                                return redirect('/')->with('success', 'Welcome back!');
+                            }
+
+                            // Allow admin and translator users to access the panel
+                            if ($user && in_array($user->role, ['admin', 'translator'])) {
+                                return redirect()->intended(Filament::getUrl());
+                            }
                         }
 
-                        // Redirect regular users away from admin panel
-                        if ($user->role === 'user') {
-                            return redirect('/')->with('success', 'Welcome back!');
-                        }
-
-                        // Allow admin and translator users to access the panel
-                        if (in_array($user->role, ['admin', 'translator'])) {
-                            return redirect()->intended(Filament::getUrl());
+                        return redirect()->intended(Filament::getUrl());
+                    } catch (\Exception $e) {
+                        // Production-safe error handling
+                        if (config('app.env') === 'production') {
+                            \Log::error('LoginResponse error: ' . $e->getMessage());
+                            return redirect('/platform/login')->with('error', 'Login error occurred. Please try again.');
+                        } else {
+                            throw $e; // Re-throw in development for debugging
                         }
                     }
-
-                    return redirect()->intended(Filament::getUrl());
                 }
             };
         });
