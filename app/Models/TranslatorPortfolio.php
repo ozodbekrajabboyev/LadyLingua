@@ -47,11 +47,29 @@ class TranslatorPortfolio extends Model
         return $this->hasMany(Translation::class, 'translator_id');
     }
 
+    public function ratings()
+    {
+        return $this->hasManyThrough(
+            Rating::class,
+            Translation::class,
+            'translator_id',
+            'translation_id',
+            'id',
+            'id'
+        );
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        // Use the ratings() hasManyThrough relationship
+        // and explicitly ask for the average of the specific column 'stars'
+        return (float) ($this->ratings()->avg('ratings.stars') ?? 0.0);
+    }
+
     public function uploads()
     {
         return $this->hasMany(Upload::class, 'translator_id');
     }
-
     public function orders()
     {
         return $this->hasMany(Order::class, 'translator_id');

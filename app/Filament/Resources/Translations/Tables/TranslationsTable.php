@@ -98,17 +98,9 @@ class TranslationsTable
                     ->alignEnd()
                     ->toggleable(),
 
-                TextColumn::make('preview_pages_cnt')
-                    ->label('Ko\'rib chiqish sahifalari')
-                    ->numeric()
-                    ->sortable()
-                    ->alignCenter()
-                    ->suffix(' sahifa')
-                    ->placeholder('—'),
-
                 TextColumn::make('preview_pdf_path')
-                    ->label('Ko\'rab chiqish PDF')
-                    ->formatStateUsing(fn ($state) => $state ? '📄Ko\'rab chiqish' : 'Fayl yo\'q')
+                    ->label('Ko\'rib chiqish PDF')
+                    ->formatStateUsing(fn ($state) => $state ? '📄Ko\'rib chiqish' : 'Fayl yo\'q')
                     ->badge()
                     ->placeholder("Topilmadi")
                     ->color(fn ($state) => $state ? 'info' : 'gray')

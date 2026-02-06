@@ -7,6 +7,7 @@ use App\Filament\Widgets\MyActiveOrders;
 use App\Filament\Widgets\RecentOrders;
 use App\Filament\Widgets\TranslatorStatsOverview;
 use App\Http\Middleware\AdminAccess;
+use Filament\Enums\UserMenuPosition;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -36,6 +37,8 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset("logo.png"))
             ->brandLogoHeight("5.5rem")
             ->favicon(asset("favicon.svg"))
+            ->globalSearch(false)
+            ->profile()
             ->path('platform')
             ->login()
             ->renderHook(
@@ -58,7 +61,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                AccountWidget::class,
+//                AccountWidget::class,
 //                FilamentInfoWidget::class,
                 // Admin Widgets
                 AdminStatsOverview::class,
