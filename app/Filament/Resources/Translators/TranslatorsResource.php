@@ -37,7 +37,8 @@ class TranslatorsResource extends Resource
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->role === 'admin';
+        $user = auth()->user();
+        return $user && $user->role === 'admin';
     }
 
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
