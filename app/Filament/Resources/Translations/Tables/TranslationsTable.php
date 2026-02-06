@@ -14,6 +14,7 @@ use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 class TranslationsTable
 {
@@ -24,19 +25,24 @@ class TranslationsTable
                 $user = auth()->user();
 
                 // If translator, show only their own translations
-                if ($user->isTranslator()) {
-                    $translatorPortfolio = $user->translatorPortfolio;
-                    if ($translatorPortfolio) {
-                        $query->where('translator_id', $translatorPortfolio->id);
-                    } else {
-                        // If translator has no portfolio, show nothing
-                        $query->whereRaw('1 = 0');
+                if ($user && $user->isTranslator()) {
+                    try {
+                        $translatorPortfolio = $user->translatorPortfolio;
+                        if ($translatorPortfolio) {
+                            $query->where('translator_id', $translatorPortfolio->id);
+                        } else {
+                            // If translator has no portfolio, show empty results
+                            $query->where('translator_id', -1);
+                            Log::warning('Translator user has no portfolio: ' . $user->email);
+                        }
+                    } catch (\Exception $e) {
+                        // Handle any relationship loading errors gracefully
+                        Log::error('Error loading translator portfolio in TranslationsTable: ' . $e->getMessage());
+                        $query->where('translator_id', -1);
                     }
                 }
 
-                // Admins see everything (no filter applied)
-
-                return $query;
+                // Admin users see all translations (no filtering needed)
             })
             ->columns([
                 TextColumn::make('work.title')
