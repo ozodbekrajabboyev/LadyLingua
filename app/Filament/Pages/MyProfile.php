@@ -30,7 +30,8 @@ class MyProfile extends Page implements HasForms
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->check() && auth()->user()->role === 'translator';
+        $user = auth()->user();
+        return $user && $user->role === 'translator';
     }
 
     public function mount(): void

@@ -64,7 +64,7 @@ class TranslationsTable
                     ->searchable()
                     ->sortable()
                     ->toggleable()
-                    ->visible(fn () => auth()->user()->isAdmin()), // Only admins see this
+                    ->visible(fn () => auth()->user()?->isAdmin() ?? false), // Only admins see this
 
                 TextColumn::make('language.lang_name')
                     ->label('Tarjima tili')
@@ -165,7 +165,7 @@ class TranslationsTable
                     ->searchable()
                     ->multiple()
                     ->preload()
-                    ->visible(fn () => auth()->user()->isAdmin()), // Only admins see this filter
+                    ->visible(fn () => auth()->user()?->isAdmin() ?? false), // Only admins see this filter
 
                 Filter::make('created_at')
                     ->form([
@@ -206,6 +206,10 @@ class TranslationsTable
                     ->visible(function ($record) {
                         $user = auth()->user();
 
+                        if (!$user) {
+                            return false;
+                        }
+
                         // Admins can edit everything
                         if ($user->isAdmin()) {
                             return true;
@@ -213,10 +217,14 @@ class TranslationsTable
 
                         // Translators can only edit their own drafts
                         if ($user->isTranslator()) {
-                            $portfolio = $user->translatorPortfolio;
-                            return $portfolio &&
-                                $record->translator_id === $portfolio->id &&
-                                $record->status === 'draft';
+                            try {
+                                $portfolio = $user->translatorPortfolio;
+                                return $portfolio &&
+                                    $record->translator_id === $portfolio->id &&
+                                    $record->status === 'draft';
+                            } catch (\Exception $e) {
+                                return false;
+                            }
                         }
 
                         return false;
