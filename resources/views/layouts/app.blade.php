@@ -239,6 +239,9 @@
         </main>
 
         <x-footer />
+
+        <!-- Chatbot Component -->
+        <x-chatbot />
     </div>
 
     @stack('scripts')
