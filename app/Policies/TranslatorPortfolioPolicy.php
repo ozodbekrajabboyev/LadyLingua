@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Models\TranslatorPortfolio;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Support\Facades\Log;
 
 class TranslatorPortfolioPolicy
 {
@@ -14,7 +13,8 @@ class TranslatorPortfolioPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin();
+        return auth()->user()->role === 'admin';
+//        return false;
     }
 
     /**
@@ -22,12 +22,9 @@ class TranslatorPortfolioPolicy
      */
     public function view(User $user, TranslatorPortfolio $translatorPortfolio): bool
     {
-        try {
-            return $user->isAdmin() || ($user->isTranslator() && $user->translatorPortfolio && $user->translatorPortfolio->id === $translatorPortfolio->id);
-        } catch (\Exception $e) {
-            Log::error('Error in TranslatorPortfolioPolicy::view: ' . $e->getMessage());
-            return $user->isAdmin(); // Fallback: only allow admin access
-        }
+//        return auth()->user()->role === 'admin';
+
+        return false;
     }
 
     /**
@@ -43,12 +40,8 @@ class TranslatorPortfolioPolicy
      */
     public function update(User $user, TranslatorPortfolio $translatorPortfolio): bool
     {
-        try {
-            return $user->isAdmin() || ($user->isTranslator() && $user->translatorPortfolio && $user->translatorPortfolio->id === $translatorPortfolio->id);
-        } catch (\Exception $e) {
-            Log::error('Error in TranslatorPortfolioPolicy::update: ' . $e->getMessage());
-            return $user->isAdmin(); // Fallback: only allow admin access
-        }
+        return auth()->user()->role !== 'admin';
+
     }
 
     /**

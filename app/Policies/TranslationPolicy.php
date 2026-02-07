@@ -13,7 +13,7 @@ class TranslationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin() || $user->isTranslator();
+        return auth()->user()->role === 'translator';
     }
 
     /**
@@ -21,7 +21,7 @@ class TranslationPolicy
      */
     public function view(User $user, Translation $translation): bool
     {
-        return $user->isAdmin() || $user->isTranslator();
+        return auth()->user()->role === 'translator';
     }
 
     /**
@@ -29,7 +29,7 @@ class TranslationPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isAdmin() || $user->isTranslator();
+        return true;
     }
 
     /**
@@ -37,7 +37,7 @@ class TranslationPolicy
      */
     public function update(User $user, Translation $translation): bool
     {
-        return $user->isAdmin() || $user->isTranslator();
+        return true;
     }
 
     /**
